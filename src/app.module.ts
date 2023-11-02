@@ -2,11 +2,15 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TagModule } from './tag/tag.module';
-import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import ormconfig from './ormconfig';
 
 @Module({
-  imports: [TagModule, DatabaseModule, ConfigModule.forRoot()], // should import it to let me use config vars in database module
+  imports: [
+    TagModule,
+    // ConfigModule.forRoot(),
+    TypeOrmModule.forRoot(ormconfig),
+  ], // should import it to let me use config vars in database module
   controllers: [AppController],
   providers: [AppService],
 })
