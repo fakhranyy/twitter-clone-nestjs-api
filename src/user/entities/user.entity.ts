@@ -16,10 +16,13 @@ export class User {
   image: string; // in our case, image is not really an image .. this is just the url where we can load the image
 
   @Column()
+  username: string;
+
+  @Column()
   password: string;
 
   @BeforeInsert()
   async hashPassword() {
-    this.password = await hash(this.password, 12);
+    this.password = await hash(this.password, 10);
   }
 }
