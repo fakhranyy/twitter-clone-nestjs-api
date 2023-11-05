@@ -18,7 +18,7 @@ export class User {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ select: false }) // it means that in our all requests, by default we're not selecting the password field  
   password: string;
 
   @BeforeInsert()
