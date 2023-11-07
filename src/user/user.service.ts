@@ -34,7 +34,7 @@ export class UserService {
       // we use select here because in userEntity
       // we hided the password by write {select: false} and we need to use the passord to check if it's auth user
       // so we write all fields that we needed 
-      // then, in end of this endpoint we going to delete user.password to hide the password again 
+      // then, in end of this endpoint we going to delete user.password to hide the password again because we don't need it anymore
       {where: {email: loginUserDto.email}, select: ['id', 'username', 'password', 'email', 'bio', 'image']}
       )
     if(!user){
@@ -49,6 +49,10 @@ export class UserService {
     return user;
 
   } 
+
+  async findById(id: number): Promise<User>{
+    return this.repo.findOneBy({id})
+  }
 
   generateJwt(user: User): string {
     return sign(
