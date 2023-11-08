@@ -1,12 +1,12 @@
-import { Controller, Post, Get, Body, UsePipes, ValidationPipe, Req } from '@nestjs/common';
+import { Controller, Post, Put, Get, Body, UsePipes, ValidationPipe, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/loginUser.dto';
-import { Request } from 'express';
 import { User } from './entities/user.entity';
-import { ExpressRequest } from 'src/types/expressRequest.interface';
 import { Userdeco } from './decorators/user.decorator'
+import { AuthGuard } from 'src/guards/auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller()
 export class UserController {
@@ -36,10 +36,21 @@ async createUser(
   }
 
   @Get('user')
+  @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized   
   async currentUser(
-    @Userdeco('id') user: User
+    @Userdeco() user: User
     ): Promise<UserResponseInterface> {
     console.log('user', user)
     return this.srv.buildUserResponse(user)
   }
+
+  @Put('user')
+  @UseGuards(AuthGuard)
+  async updateCurrentUser(
+    @Userdeco('id') currentUserId: number,
+    @Body('user') updateUserDto: UpdateUserDto
+    ): Promise<UserResponseInterface> {
+    const user = await this.srv.updateUser(currentUserId, updateUserDto);
+    return this.srv.buildUserResponse(user);
+    }
 }
