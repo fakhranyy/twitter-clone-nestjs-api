@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import ormconfig from './ormconfig';
 import { AuthMiddleware } from './user/middlewares/auth.middleware';
+import { ArticleModule } from './article/article.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthMiddleware } from './user/middlewares/auth.middleware';
     // ConfigModule.forRoot(),
     TypeOrmModule.forRoot(ormconfig),
     UserModule,
+    ArticleModule
   ], // should import it to let me use config vars in database module
   controllers: [AppController],
   providers: [AppService],

@@ -17,49 +17,66 @@ export class UserService {
   ) {}
   async createUSer(createUserDto: CreateUserDto): Promise<User> {
     const userByEmail = await this.repo.findOne({
-      where: {email: createUserDto.email},
-    })
+      where: { email: createUserDto.email },
+    });
     const userByUsername = await this.repo.findOne({
-      where: {username: createUserDto.username},
-    })
-    if(userByEmail || userByUsername) {
-      throw new HttpException('Email or username are taken', HttpStatus.UNPROCESSABLE_ENTITY)
+      where: { username: createUserDto.username },
+    });
+    if (userByEmail || userByUsername) {
+      throw new HttpException(
+        'Email or username are taken',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
     const newUser = new User();
     Object.assign(newUser, createUserDto); // we Assigned all properties from createUserDto inside our newUser
     return await this.repo.save(newUser);
   }
 
-  async logIn(loginUserDto: LoginUserDto): Promise<User>{
-    const user = await this.repo.findOne( 
+  async logIn(loginUserDto: LoginUserDto): Promise<User> {
+    const user = await this.repo.findOne(
       // we use select here because in userEntity
       // we hided the password by write {select: false} and we need to use the passord to check if it's auth user
-      // so we write all fields that we needed 
+      // so we write all fields that we needed
       // then, in end of this endpoint we going to delete user.password to hide the password again because we don't need it anymore
-      {where: {email: loginUserDto.email}, select: ['id', 'username', 'password', 'email', 'bio', 'image']}
-      )
-    if(!user){
-      throw new HttpException('credentials are not valid', HttpStatus.UNPROCESSABLE_ENTITY);
+      {
+        where: { email: loginUserDto.email },
+        select: ['id', 'username', 'password', 'email', 'bio', 'image'],
+      },
+    );
+    if (!user) {
+      throw new HttpException(
+        'credentials are not valid',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
-    const isPasswordCorrect = await compare(loginUserDto.password , user.password);
-    if(!isPasswordCorrect){
-      throw new HttpException('credentials are not valid', HttpStatus.UNPROCESSABLE_ENTITY);
+    const isPasswordCorrect = await compare(
+      loginUserDto.password,
+      user.password,
+    );
+    if (!isPasswordCorrect) {
+      throw new HttpException(
+        'credentials are not valid',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
     delete user.password;
     return user;
-
-  } 
-
-  async findById(id: number): Promise<User>{
-    return this.repo.findOneBy({id})
   }
 
-    async updateUser(currentUserId: number, updateUserDto: UpdateUserDto):Promise<User>{
-      const user = await this.findById(currentUserId);
-      Object.assign(user, updateUserDto); //  Object.assign(target, source)
-      return await this.repo.save(user);
-    }
+  async findById(id: number): Promise<User> {
+    return this.repo.findOneBy({ id });
+  }
+
+  async updateUser(
+    currentUserId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    const user = await this.findById(currentUserId);
+    Object.assign(user, updateUserDto); //  Object.assign(target, source)
+    return await this.repo.save(user);
+  }
 
   generateJwt(user: User): string {
     return sign(

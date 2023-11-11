@@ -12,5 +12,4 @@ export class AddRelationsBetweenArticleAndUser1699627953229 implements Migration
         await queryRunner.query(`ALTER TABLE \`articles\` DROP FOREIGN KEY \`FK_65d9ccc1b02f4d904e90bd76a34\``);
         await queryRunner.query(`ALTER TABLE \`articles\` DROP COLUMN \`authorId\``);
     }
-
 }
