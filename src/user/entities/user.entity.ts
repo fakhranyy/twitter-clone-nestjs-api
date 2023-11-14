@@ -14,12 +14,12 @@ export class User {
   bio: string;
 
   @Column({ default: '' })
-  image: string; // in our case, image is not really an image .. this is just the url where we can load the image
+  image: string;             //* in our case, image is not really an image .. this is just the url where we can load the image
 
   @Column()
   username: string;
 
-  @Column({ select: false }) // it means that in our all requests, by default we're not selecting the password field  
+  @Column({ select: false }) //* it means that in our all requests, by default we're not selecting the password field  
   password: string;
 
   @BeforeInsert()

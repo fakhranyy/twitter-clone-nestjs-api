@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Tag } from './entities/tag.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tag])], // this is to let me use the entity as a repo in srv class
+  imports: [TypeOrmModule.forFeature([Tag])], //* this is to let me use the entity as a repo in srv class
   controllers: [TagController],
   providers: [TagService]
 })

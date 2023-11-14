@@ -14,7 +14,7 @@ import { ArticleModule } from './article/article.module';
     // ConfigModule.forRoot(),
     TypeOrmModule.forRoot(ormconfig),
     UserModule,
-    ArticleModule
+    ArticleModule,
   ], // should import it to let me use config vars in database module
   controllers: [AppController],
   providers: [AppService],
@@ -26,7 +26,7 @@ export class AppModule {
 
    -> and here is how we can provide globally for all our actions this middleware 
   */
-  configure(consumer: MiddlewareConsumer){ // this is a func where inside we have consumer, and what is between (##) is the consumer
+  configure(consumer: MiddlewareConsumer){     // this is a func where inside we have consumer, and what is between (##) is the consumer
     consumer.apply(AuthMiddleware).forRoutes({ //and specidy here for what roots we want to apply this middleware
       path: '*', // this star (*) means all, it means apply it for all routes
       method: RequestMethod.ALL, 

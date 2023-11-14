@@ -35,7 +35,8 @@ export class Article {
         this.updatedAt = new Date();
     }
 
-    @ManyToOne(()=> User, (user) => user.articles)
+    @ManyToOne(()=> User, (user) => user.articles, {eager: true}) 
+    //? eager : true -> this option means that we will always load automatically this relation (author for our article)
     author: User;  // first argument is the field name, it's not always should be the same name of entity class
     
 

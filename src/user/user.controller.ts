@@ -8,6 +8,7 @@ import {
   ValidationPipe,
   Req,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,10 +16,12 @@ import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { User } from './entities/user.entity';
 import { Userdeco } from './decorators/user.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('Users Apis')
 export class UserController {
   constructor(private readonly srv: UserService) {}
 
@@ -54,7 +57,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
     return this.srv.buildUserResponse(user);
   }
 
-  @Put('user')
+  @Patch('user')
   @UseGuards(AuthGuard)
   async updateCurrentUser(
     @Userdeco('id') currentUserId: number,
