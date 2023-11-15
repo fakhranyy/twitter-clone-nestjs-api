@@ -1,4 +1,15 @@
-import { Controller, Post, Body, UseGuards, Param,  Get, Delete, Put, Patch, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Get,
+  Delete,
+  Patch,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -7,11 +18,14 @@ import { User } from 'src/user/entities/user.entity';
 import { ArticleResponseInterface } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { LazyModuleLoader } from '@nestjs/core';
+import { ArticleModule } from './article.module';
 
 @Controller('/articles')
 @ApiTags('Articles Apis')
 export class ArticleController {
-  constructor(private readonly srv: ArticleService) {}
+  // constructor(private readonly srv: ArticleService) {}
+  constructor(private lazyModuleLoader: LazyModuleLoader) {}
   @Post()
   @UseGuards(AuthGuard) //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
   @UsePipes(new ValidationPipe())
@@ -19,32 +33,49 @@ export class ArticleController {
     @Userdeco() currentUser: User,
     @Body('article') createArticleDto: CreateArticleDto,
   ): Promise<ArticleResponseInterface> {
-    const article = await this.srv.createArticle(currentUser, createArticleDto);
-    return this.srv.buildArticaleResponse(article);
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = (await moduleRef).get(ArticleService);
+    const article = await lazySrv.createArticle(currentUser, createArticleDto);
+    return lazySrv.buildArticaleResponse(article);
   }
 
   @Get(':slug') //* dynamic param
-  async getSingleArticle(@Param('slug') slug: string): Promise<ArticleResponseInterface> {
-    const article = await this.srv.findBySlug(slug)
-    return this.srv.buildArticaleResponse(article)
+  async getSingleArticle(
+    @Param('slug') slug: string,
+  ): Promise<ArticleResponseInterface> {
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = (await moduleRef).get(ArticleService);
+    const article = await lazySrv.findBySlug(slug);
+    return lazySrv.buildArticaleResponse(article);
   }
 
   @Delete(':slug')
   @UseGuards(AuthGuard)
-  async deleteArticle(@Userdeco('id') currentUserId: number, @Param('slug') slug: string){
-    return await this.srv.deleteArticle(slug, currentUserId)
+  async deleteArticle(
+    @Userdeco('id') currentUserId: number,
+    @Param('slug') slug: string,
+  ) {
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = (await moduleRef).get(ArticleService);
+    return await lazySrv.deleteArticle(slug, currentUserId);
   }
 
   @Patch(':slug')
   // @Put(':slug')
-  @UseGuards(AuthGuard)                     //* thats mean it should be Authorized user
-  @UsePipes(new ValidationPipe())           //* that validationPipe would implement this pipe on params 
+  @UseGuards(AuthGuard) //* thats mean it should be Authorized user
+  @UsePipes(new ValidationPipe()) //* that validationPipe would implement this pipe on params
   async updateArticle(
-    @Userdeco('id') currentUserId: number,  //* this decorator has the metadata of user 
-     @Param('slug') slug: string,
-     @Body('article') updateArticleDto: UpdateArticleDto, //! this means that I should write the body inside "article" : {} ,And if not it wouldn't work in update 
-     ){
-      const article = await this.srv.updateArticle(slug, updateArticleDto, currentUserId);
-      return await this.srv.buildArticaleResponse(article);
+    @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
+    @Param('slug') slug: string,
+    @Body('article') updateArticleDto: UpdateArticleDto, //! this means that I should write the body inside "article" : {} ,And if not it wouldn't work in update
+  ) {
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = (await moduleRef).get(ArticleService);
+    const article = await lazySrv.updateArticle(
+      slug,
+      updateArticleDto,
+      currentUserId,
+    );
+    return await lazySrv.buildArticaleResponse(article);
   }
 }
