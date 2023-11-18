@@ -12,10 +12,10 @@ export class Article {
     @Column()
     title: string;
 
-    @Column({ default: '' })
+    @Column({ nullable: true })
     description: string;
 
-    @Column({ default: '' })
+    @Column({ nullable: true })
     body: string;
 
     @Column({ type: 'timestamp', default: ()=> 'CURRENT_TIMESTAMP'})

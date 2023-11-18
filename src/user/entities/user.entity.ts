@@ -10,10 +10,10 @@ export class User {
   @Column()
   email: string;
 
-  @Column({ default: '' })
+  @Column({ nullable: true })
   bio: string;
 
-  @Column({ default: '' })
+  @Column({nullable: true })
   image: string;             //* in our case, image is not really an image .. this is just the url where we can load the image
 
   @Column()
