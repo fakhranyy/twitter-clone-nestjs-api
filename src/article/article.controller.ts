@@ -21,9 +21,7 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ArticleModule } from './article.module';
-import { query } from 'express';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
-import { Article } from './entities/article.entity';
 
 @Controller('/articles')
 @ApiTags('Articles Apis')
@@ -37,7 +35,10 @@ export class ArticleController {
   //* -> So we typing here @Query and then we're getting the object with all our parameters.
   //* -> And of course we can get a single parameter if we will provide it inside.
   @Get()
-  async findAll(@Userdeco('id') currentUserid: number, @Query() query: any ):Promise<ArticlesResponseInterface>{
+  async findAll(
+    @Userdeco('id') currentUserid: number,
+    @Query() query: any,
+  ): Promise<ArticlesResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = (await moduleRef).get(ArticleService);
     return await lazySrv.findAll(currentUserid, query);
@@ -45,7 +46,7 @@ export class ArticleController {
 
   @Post()
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
-  @UseGuards(AuthGuard) 
+  @UseGuards(AuthGuard)
   @UsePipes(new ValidationPipe())
   async create(
     @Userdeco() currentUser: User,
@@ -101,12 +102,28 @@ export class ArticleController {
   @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async addArticleToFavorites(
     @Userdeco('id') currentUserId: number,
-     @Param('slug') slug: string 
-     ):Promise<ArticleResponseInterface> {
+    @Param('slug') slug: string,
+  ): Promise<ArticleResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = (await moduleRef).get(ArticleService);
-    
+
     const article = await lazySrv.addArticleToFavorites(slug, currentUserId);
+    return lazySrv.buildArticaleResponse(article);
+  }
+
+  @Delete(':slug/favorite')
+  @UseGuards(AuthGuard) //* it's only allowed to authorized users
+  async deleteArticleFromFavorites(
+    @Userdeco('id') currentUserId: number,
+    @Param('slug') slug: string,
+  ): Promise<ArticleResponseInterface> {
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = (await moduleRef).get(ArticleService);
+
+    const article = await lazySrv.deleteArticleFromFavorites(
+      slug,
+      currentUserId,
+    );
     return lazySrv.buildArticaleResponse(article);
   }
 }
