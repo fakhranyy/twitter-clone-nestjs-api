@@ -23,11 +23,12 @@ import { LazyModuleLoader } from '@nestjs/core';
 import { ArticleModule } from './article.module';
 import { query } from 'express';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { Article } from './entities/article.entity';
 
 @Controller('/articles')
 @ApiTags('Articles Apis')
 export class ArticleController {
-  // constructor(private readonly srv: ArticleService) {}
+  //! constructor(private readonly srv: ArticleService) {}
   constructor(private lazyModuleLoader: LazyModuleLoader) {}
 
   //? what is @Query ?
@@ -35,7 +36,6 @@ export class ArticleController {
   //* -> every thing that is going after question mark is query parameters, So to get query param we use @Query() decorator.
   //* -> So we typing here @Query and then we're getting the object with all our parameters.
   //* -> And of course we can get a single parameter if we will provide it inside.
-
   @Get()
   async findAll(@Userdeco('id') currentUserid: number, @Query() query: any ):Promise<ArticlesResponseInterface>{
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
@@ -94,6 +94,19 @@ export class ArticleController {
       updateArticleDto,
       currentUserId,
     );
-    return await lazySrv.buildArticaleResponse(article);
+    return lazySrv.buildArticaleResponse(article);
+  }
+
+  @Post(':slug/favorite')
+  @UseGuards(AuthGuard) //* it's only allowed to authorized users
+  async addArticleToFavorites(
+    @Userdeco('id') currentUserId: number,
+     @Param('slug') slug: string 
+     ):Promise<ArticleResponseInterface> {
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = (await moduleRef).get(ArticleService);
+    
+    const article = await lazySrv.addArticleToFavorites(slug, currentUserId);
+    return lazySrv.buildArticaleResponse(article);
   }
 }

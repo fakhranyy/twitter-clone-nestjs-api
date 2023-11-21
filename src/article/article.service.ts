@@ -2,11 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './entities/article.entity';
-import { DataSource, DeleteResult, Repository, getRepository } from 'typeorm';
+import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { ArticleResponseInterface } from './types/articleResponse.interface';
 import slugify from 'slugify';
-import { sign } from 'jsonwebtoken';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 
@@ -25,37 +24,46 @@ export class ArticleService {
     const queryBuilder = this.dataSource
       .getRepository(Article)
       .createQueryBuilder(
-        'articles',         //* this is a alias
-      ).leftJoinAndSelect(  //* we loaded author relation, Becaue { eager: true } doesn't work in QueryBuilder
-        'articles.author' , //* this is the field which we want to join it
-        'author' /*alias*/,
-      );                  
+        'articles', //* this is a alias
+      )
+      .leftJoinAndSelect(
+        //* we loaded author relation, Becaue { eager: true } doesn't work in QueryBuilder
+        'articles.author', //* this is the field which we want to join it, Without alias it should be -> Article.author ( Article = ArticleEntity className) -> which Article.author return a relation with UserEntity properties
+        'author', //* alias
+      );
 
-        if(query.tag){
-          queryBuilder.andWhere('articles.tagList LIKE :tag',{tag: `%${query.tag}`}); 
-          //* we can provide only a single condition,
-          //* ( articles.tagList ) => table.field
-          //* ( % ) must be exist to find substring
-        }
+    if (query.tag) {
+      queryBuilder.andWhere('articles.tagList LIKE :tag', {
+        tag: `%${query.tag}`,
+        //* we can provide only a single condition,
+        //* ( articles.tagList ) => table.field
+        //* ( % ) must be exist to find substring
+      });
+    }
 
-        if(query.author){
-          //! const author = await this.userRepo.findOne({ where: {username: query.author}}); 
-          queryBuilder.andWhere('articles.authorId = :username', {username: query.author});
-        }
+    if (query.author) {
+      //!  const author = await this.userRepo.findOne({ where: { username: query.author }});
+      //TODO - better & shorter code and comment this - queryBuilder.andWhere("articles.authorId = :username", { username: author.username });
+      queryBuilder.andWhere('author.username = :username', {
+        username: query.author,
+      }); //* we use author which is -> Article.author: UserEntity
+    }
 
-      queryBuilder.orderBy('articles.createdAt', 'DESC'); //* This function sorting the articles by createdAt field which in table articles ( DESC )
+    queryBuilder.orderBy('articles.createdAt', 'DESC'); //* This function sorting the articles by createdAt field which in table articles ( DESC )
 
-      const articlesCount = await queryBuilder.getCount();
-      
-      if(query.limit){  //* query is from @Query() decorator
-        queryBuilder.limit(query.limit); 
-      }
+    const articlesCount = await queryBuilder.getCount();
 
-      if(query.offset){ //* offset means the number which we'll skip it from articles array and take the limit after it
-        queryBuilder.offset(query.offset);
-      }
-      
-      const articles = await queryBuilder.getMany();
+    if (query.limit) {
+      //* query is from @Query() decorator
+      queryBuilder.limit(query.limit);
+    }
+
+    if (query.offset) {
+      //* offset means the number which we'll skip it from articles array and take the limit after it
+      queryBuilder.offset(query.offset);
+    }
+
+    const articles = await queryBuilder.getMany();
 
     return { articles, articlesCount };
   }
@@ -119,5 +127,28 @@ export class ArticleService {
     }
     Object.assign(article, updateArticleDto); //! Object.assign(target, source)
     return await this.repo.save(article);
+  }
+
+  async addArticleToFavorites(slug: string, userId: number): Promise<Article> {
+    const article = await this.findBySlug(slug);
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['favorites'],
+    }); //* when we fetch a single user, we want to get this user with this relations
+
+    const isArticleNotFavorited =
+      user.favorites.findIndex(
+        (articleInFavorites) => articleInFavorites.id === article.id,
+      ) === -1; //* in this case, if our findIndex return minus one, this means that the article is note favorite
+
+    if (isArticleNotFavorited) {
+      user.favorites.push(article);
+      article.favoritesCount++;
+      await this.userRepo.save(user);
+      await this.repo.save(article);
+    }
+
+    console.log('user', user);
+    return article;
   }
 }
