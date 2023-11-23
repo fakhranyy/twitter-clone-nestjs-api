@@ -9,6 +9,6 @@ import { User } from 'src/user/entities/user.entity';
   imports: [TypeOrmModule.forFeature([Article, User])], //* we use TypeOrmModule.forFeature([Article]) to let us use article as a repo in service class
   controllers: [ArticleController],
   providers: [ArticleService],
-  exports: [ArticleService]
+  exports: [ArticleService],
 })
 export class ArticleModule {}
