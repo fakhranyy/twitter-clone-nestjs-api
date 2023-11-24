@@ -28,8 +28,8 @@ lerna-debug.log*
 *.sublime-workspace
 
 # Database configurations
-ormconfig.ts
-ormdatasource.ts
+.ormconfig.ts
+.ormdatasource.ts
 
 # IDE - VSCode
 .vscode/*
