@@ -32,6 +32,15 @@ export class UserController {
 -> validationPipe use Dto class which are already used in the same endpoint 
 and i need to add validation rules from (class-validator & class-transformer) in dto class before using it to validate 
 */
+
+
+  @Get('usersk')
+  async findAll () :Promise<User[]> {
+    const moduleRef = this.lazyModuleLoader.load(() => UserModule);
+    const lazySrv = (await moduleRef).get(UserService);
+    return lazySrv.findAll();
+  }
+
   @Post('users')
   @UsePipes(new ValidationPipe())
   async createUser(

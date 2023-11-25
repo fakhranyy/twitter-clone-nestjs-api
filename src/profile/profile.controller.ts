@@ -47,7 +47,4 @@ export class ProfileController {
     const profile = await lazySrv.unfollowProfile(currentUserId, profileUsername); //* ( profileUsername ) that we want to follow
     return lazySrv.buildProfileResponse(profile); //* the response which made for the frontend
   }
-
- 
-
 }

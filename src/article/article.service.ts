@@ -8,12 +8,14 @@ import { ArticleResponseInterface } from './types/articleResponse.interface';
 import slugify from 'slugify';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { Follow } from 'src/profile/entities/follow.entity';
 
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectRepository(Article) private readonly artRepo: Repository<Article>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Follow) private readonly followRepo: Repository<Follow>,
     private dataSource: DataSource,
   ) {}
 
@@ -201,5 +203,41 @@ export class ArticleService {
       await this.artRepo.save(article);
     }
     return article;
+  }
+
+  async getFeed(
+    currentUserId: number,
+    query: any,
+  ): Promise<ArticlesResponseInterface> {
+    const follows = await this.followRepo.find({
+      where: { followerId: currentUserId },
+    }); //* find return for us array of data
+
+    if (follows.length === 0) {
+      return { articles: [], articlesCount: 0 };
+    }
+    const followingUserIds = follows.map((follow) => follow.followingId); //* we return the id of the person who we followed
+    const queryBuilder = this.dataSource
+      //* this code checks that our authorId inside every single article is in our array of following userIds
+      //* with this code inside our query builder, we will get only articles from prople that were following
+      .getRepository(Article)
+      .createQueryBuilder('articles') //* alias
+      .leftJoinAndSelect('articles.author', 'author')
+      .where('articles.authorId IN (:...ids)', { ids: followingUserIds });
+
+    queryBuilder.orderBy('articles.createdAt', 'DESC');
+
+    const articlesCount = await queryBuilder.getCount();
+
+    if (query.limit) {
+      queryBuilder.limit(query.limit);
+    }
+    if (query.offset) {
+      queryBuilder.offset(query.offset);
+    }
+
+    const articles = await queryBuilder.getMany();
+
+    return { articles, articlesCount };
   }
 }

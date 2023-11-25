@@ -23,7 +23,7 @@ import { LazyModuleLoader } from '@nestjs/core';
 import { ArticleModule } from './article.module';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 
-@Controller('/articles')
+@Controller('articles')
 @ApiTags('Articles Apis')
 export class ArticleController {
   //! constructor(private readonly srv: ArticleService) {}
@@ -58,7 +58,7 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
 
-  @Get(':slug') //* dynamic param
+  @Get('single/:slug') //* param is a optional field
   async getSingleArticle(
     @Param('slug') slug: string,
   ): Promise<ArticleResponseInterface> {
@@ -68,7 +68,7 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
 
-  @Delete(':slug')
+  @Delete(':slug') 
   @UseGuards(AuthGuard)
   async deleteArticle(
     @Userdeco('id') currentUserId: number,
@@ -80,7 +80,7 @@ export class ArticleController {
   }
 
   @Patch(':slug')
-  // @Put(':slug')
+  //! @Put(':slug')
   @UseGuards(AuthGuard) //* thats mean it should be Authorized user
   @UsePipes(new ValidationPipe()) //* that validationPipe would implement this pipe on params
   async updateArticle(
@@ -126,4 +126,16 @@ export class ArticleController {
     );
     return lazySrv.buildArticaleResponse(article);
   }
+
+  @Get('feed')
+  @UseGuards(AuthGuard)
+  async getFeed(@Userdeco('id') currentUserId: number, @Query() query: any ) :Promise<ArticlesResponseInterface> {
+    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv   = (await moduleRef).get(ArticleService);
+    return await lazySrv.getFeed(currentUserId, query);
+  }
+
 }
+
+//! -> @Get('articles')
+//! -> @Get('articles/:slug')

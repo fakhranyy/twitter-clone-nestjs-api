@@ -15,6 +15,12 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
+
+  async findAll() :Promise<User[]> {
+    return await this.repo.find()
+
+  }
+
   async createUSer(createUserDto: CreateUserDto): Promise<User> {
     const userByEmail = await this.repo.findOne({
       where: { email: createUserDto.email },
