@@ -8,7 +8,6 @@ import {
   Delete,
   Patch,
   UsePipes,
-  ValidationPipe,
   Query,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
@@ -22,6 +21,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ArticleModule } from './article.module';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 
 @Controller('articles')
 @ApiTags('Articles Apis')
@@ -47,7 +47,7 @@ export class ArticleController {
   @Post()
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
   @UseGuards(AuthGuard)
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async create(
     @Userdeco() currentUser: User,
     @Body('article') createArticleDto: CreateArticleDto,
@@ -82,7 +82,7 @@ export class ArticleController {
   @Patch(':slug')
   //! @Put(':slug')
   @UseGuards(AuthGuard) //* thats mean it should be Authorized user
-  @UsePipes(new ValidationPipe()) //* that validationPipe would implement this pipe on params
+  @UsePipes(new BackendValidationPipe()) //* that validationPipe would implement this pipe on params
   async updateArticle(
     @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
     @Param('slug') slug: string,

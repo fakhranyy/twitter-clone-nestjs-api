@@ -16,23 +16,31 @@ export class UserService {
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
-  async findAll() :Promise<User[]> {
-    return await this.repo.find()
-
+  async findAll(): Promise<User[]> {
+    return await this.repo.find();
   }
 
   async createUSer(createUserDto: CreateUserDto): Promise<User> {
+    const errorResponse = {
+      errors: {},
+    };
     const userByEmail = await this.repo.findOne({
       where: { email: createUserDto.email },
     });
     const userByUsername = await this.repo.findOne({
       where: { username: createUserDto.username },
     });
+
+    if (userByEmail) {
+      errorResponse.errors['email'] = 'has already been taken';
+    }
+
+    if (userByUsername) {
+      errorResponse.errors['username'] = 'has already been taken';
+    }
+
     if (userByEmail || userByUsername) {
-      throw new HttpException(
-        'Email or username are taken',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
     const newUser = new User();
     Object.assign(newUser, createUserDto); // we Assigned all properties from createUserDto inside our newUser
@@ -40,6 +48,11 @@ export class UserService {
   }
 
   async logIn(loginUserDto: LoginUserDto): Promise<User> {
+    const errorResponse = {
+      errors: {
+        'email or password': 'is invalid',
+      },
+    };
     const user = await this.repo.findOne(
       // we use select here because in userEntity
       // we hided the password by write {select: false} and we need to use the passord to check if it's auth user
@@ -51,20 +64,14 @@ export class UserService {
       },
     );
     if (!user) {
-      throw new HttpException(
-        'credentials are not valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
     const isPasswordCorrect = await compare(
       loginUserDto.password,
       user.password,
     );
     if (!isPasswordCorrect) {
-      throw new HttpException(
-        'credentials are not valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     delete user.password;

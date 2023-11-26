@@ -4,7 +4,6 @@ import {
   Get,
   Body,
   UsePipes,
-  ValidationPipe,
   UseGuards,
   Patch,
 } from '@nestjs/common';
@@ -19,6 +18,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
+import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 
 @Controller()
 @ApiTags('Users Apis')
@@ -34,15 +34,15 @@ and i need to add validation rules from (class-validator & class-transformer) in
 */
 
 
-  @Get('usersk')
+  @Get('users')
   async findAll () :Promise<User[]> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
     return lazySrv.findAll();
   }
 
-  @Post('users')
-  @UsePipes(new ValidationPipe())
+  @Post('user')
+  @UsePipes(new BackendValidationPipe())
   async createUser(
     @Body('user') createUserDto: CreateUserDto, // because of @Body('user'), In postMan When i Passed params to test I should put it in object user: {id:'', email: '', etc}
   ): Promise<UserResponseInterface> {
@@ -53,7 +53,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
   }
 
   @Post('users/login')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async login(
     @Body('user') loginUserDto: LoginUserDto,
   ): Promise<UserResponseInterface> {
