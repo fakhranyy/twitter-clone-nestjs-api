@@ -5,11 +5,13 @@ export class CreateArticleDto {
     @IsNotEmpty()
     readonly title: string;
     
-    @IsNotEmpty()
+    // @IsNotEmpty()
     readonly description: string;
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
     readonly body: string;
+
+    readonly comments: string;
 
     readonly tagList?: string[]; // the ( ? ) after field name makes it not mandatory 
 

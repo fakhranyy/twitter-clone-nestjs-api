@@ -1,0 +1,548 @@
+{
+	"info": {
+		"_postman_id": "ca788d2a-a07e-4437-9fbf-70be734a6ff3",
+		"name": "twitter-clone-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28386496",
+		"_collection_link": "https://gold-water-721915.postman.co/workspace/New-Team-Workspace~4aaab378-6bfd-44ee-938e-fce511881e99/collection/28386496-ca788d2a-a07e-4437-9fbf-70be734a6ff3?action=share&source=collection_link&creator=28386496"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": {\r\n        \"username\" : \"zrzr\",\r\n        \"email\": \"zrzr@gmail.com\",\r\n        \"password\": \"zr\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": {\r\n        \"email\": \"eslm@gmail.com\",\r\n        \"password\": \"eslam\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Article",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMTM0OTc1Mn0.gzSrVoCto_uuJugTIf2urESOBUikV-i-WiBPKtOFTk0",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"article\": {\r\n        \"title\": \"how to train your zrzr\",\r\n        \"tagList\": [\"eslam\"],\r\n        \"comments\": \"test our code in this test\",\r\n        \"description\": \"kjendnkqjwandkajnns\",\r\n        \"body\": \"zia zia zia\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/articles",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get  single article by slug",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aSIsImVtYWlsIjoiemlhZEBnbWFpbC5jb20iLCJpYXQiOjE2OTk3MDE5MDN9._gjNwn9QAJnFvuvhlnMpHt0w9cENj2JyHfav6nppLRY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"article\": {\r\n        \"title\": \"how to train your dragon\",\r\n        \"description\": \"Ever wonder How>\",\r\n        \"body\": \"you have to belive\",\r\n        \"tagList\": [\"reactjs\", \"nestjs\", \"ts\"]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/articles/how-to-train-your-dragon-cqmwcu",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"how-to-train-your-dragon-cqmwcu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update article",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aSIsImVtYWlsIjoiemlhZEBnbWFpbC5jb20iLCJpYXQiOjE2OTk3MDE5MDN9._gjNwn9QAJnFvuvhlnMpHt0w9cENj2JyHfav6nppLRY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"article\": {\r\n        \"title\": \"how to train your dragon\",\r\n        \"description\": \"Ever wonder How>\",\r\n        \"body\": \"you have to belive\",\r\n        \"tagList\": [\"reactjs\", \"nestjs\", \"ts\"]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/articles/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": {\r\n        \"email\": \"zrzr@gmail.com\",\r\n        \"password\": \"zr\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/user",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Current user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJuYW1lIjoienJ6ciIsImVtYWlsIjoienJ6ckBnbWFpbC5jb20iLCJpYXQiOjE2OTkyODcwMDZ9.HPbtoQ_ARMPlzrqCAocqy9N_dZUbUUHqZK7Za8Qm_Joffd",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"articles\": {\r\n        \"title\": \"how to train your dragon\",\r\n        \"description\": \"Ever wonder How>\",\r\n        \"body\": \"you have to belive\",\r\n        \"tagList\": [\"reactjs\", \"nestjs\", \"ts\"]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/user",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Articles",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMDUyMDY3OX0.CZRazjXbTyJMK8fQ3kYl0AwX565cIwOg409a62xDuRY",
+						"type": "text"
+					},
+					{
+						"key": "limit",
+						"value": "2",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"articles\": {\r\n        \"title\": \"how to train your dragon\",\r\n        \"description\": \"Ever wonder How>\",\r\n        \"body\": \"you have to belive\",\r\n        \"tagList\": [\"reactjs\", \"nestjs\", \"ts\"]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/articles/single/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"single",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Like articles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMDUyMDY3OX0.CZRazjXbTyJMK8fQ3kYl0AwX565cIwOg409a62xDuRY",
+						"type": "text"
+					},
+					{
+						"key": "limit",
+						"value": "2",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/articles/how-to-train-your-mind-x8jl0e/favorite",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"how-to-train-your-mind-x8jl0e",
+						"favorite"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Dislike articles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMDUyMDY3OX0.CZRazjXbTyJMK8fQ3kYl0AwX565cIwOg409a62xDuRY",
+						"type": "text"
+					},
+					{
+						"key": "limit",
+						"value": "2",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/articles/how-to-train-your-mind-x8jl0e/favorite",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"how-to-train-your-mind-x8jl0e",
+						"favorite"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Follow profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMDg2MzE5OX0.pH3BuJvgr-KKAXE5um_zrIB9JDLpX0mpZmrqJvjIp_s",
+						"type": "text"
+					},
+					{
+						"key": "limit",
+						"value": "2",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/profiles/eslam/follow",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"profiles",
+						"eslam",
+						"follow"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unfollow profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMDUyMDY3OX0.CZRazjXbTyJMK8fQ3kYl0AwX565cIwOg409a62xDuRY",
+						"type": "text"
+					},
+					{
+						"key": "limit",
+						"value": "2",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/profiles/:username/unfollow",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"profiles",
+						":username",
+						"unfollow"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJuYW1lIjoienJ6ciIsImVtYWlsIjoienJ6ckBnbWFpbC5jb20iLCJpYXQiOjE2OTkyODcwMDZ9.HPbtoQ_ARMPlzrqCAocqy9N_dZUbUUHqZK7Za8Qm_Joffd",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"articles\": {\r\n        \"title\": \"how to train your dragon\",\r\n        \"description\": \"Ever wonder How>\",\r\n        \"body\": \"you have to belive\",\r\n        \"tagList\": [\"reactjs\", \"nestjs\", \"ts\"]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get current feed",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ6aWFkIiwiZW1haWwiOiJ6aWFkQGdtYWlsLmNvbSIsImlhdCI6MTcwMDg3MDYyMX0.VtKHhHrqI4nyKY3_pFfnKGwTI65WLblgPoPhneCMAOE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/articles/feed",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"articles",
+						"feed"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

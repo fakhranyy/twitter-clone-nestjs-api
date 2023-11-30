@@ -21,6 +21,11 @@
 
   - Create, retrieve, update, and delete operations for users, articles, tags, profiles, and other related entities.
 
+- **Lazy loading:**
+
+  - Reduces initial load time – Lazy loading a webpage reduces page weight, allowing for a quicker page load time.
+  - Lazy loading can help decrease bootstrap time by loading only modules required by the specific serverless function invocation.
+
 - **MySql Integration:**
 
   - Seamless interaction with Mysql for efficient data storage and retrieval.
@@ -45,10 +50,6 @@
 - **Error Handling:**
 
   - Robust error handling mechanisms to ensure smooth API operation.
-
-- **Admin Operations:**
-
-  - Specific operations available only to admin users for enhanced control.
 
 ## Prerequisites
 

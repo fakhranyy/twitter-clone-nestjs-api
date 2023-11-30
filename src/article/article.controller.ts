@@ -68,7 +68,7 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
 
-  @Delete(':slug') 
+  @Delete(':slug')
   @UseGuards(AuthGuard)
   async deleteArticle(
     @Userdeco('id') currentUserId: number,
@@ -129,13 +129,13 @@ export class ArticleController {
 
   @Get('feed')
   @UseGuards(AuthGuard)
-  async getFeed(@Userdeco('id') currentUserId: number, @Query() query: any ) :Promise<ArticlesResponseInterface> {
+  async getFeed(
+    @Userdeco('id') currentUserId: number,
+    @Query() query: any,
+  ): Promise<ArticlesResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
-    const lazySrv   = (await moduleRef).get(ArticleService);
+    const lazySrv = (await moduleRef).get(ArticleService);
     return await lazySrv.getFeed(currentUserId, query);
   }
 
 }
-
-//! -> @Get('articles')
-//! -> @Get('articles/:slug')

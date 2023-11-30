@@ -156,6 +156,7 @@ export class ArticleService {
     Object.assign(article, updateArticleDto); //! Object.assign(target, source)
     return await this.artRepo.save(article);
   }
+  
 
   async addArticleToFavorites(slug: string, userId: number): Promise<Article> {
     const article = await this.findBySlug(slug);
@@ -204,6 +205,7 @@ export class ArticleService {
     }
     return article;
   }
+
 
   async getFeed(
     currentUserId: number,

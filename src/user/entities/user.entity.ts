@@ -42,4 +42,5 @@ export class User {
   @JoinTable()
   favorites: Article[]; //? the 3rd table name will be ( Plural Noun of entityClassOne _ relationName _ Plural Noun of entityClassTwo )
   //* in our case the 3rd table will be users_favorites_articles
+
 }

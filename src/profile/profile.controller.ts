@@ -5,7 +5,9 @@ import { ProfileResponseInterface } from './types/profileResponse.interface';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ProfileModule } from './profile.module';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Profiles')
 @Controller('profiles')
 export class ProfileController {
   // constructor(private readonly profileSer: ProfileService) {}
