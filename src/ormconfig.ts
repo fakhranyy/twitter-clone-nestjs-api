@@ -8,7 +8,7 @@ const config: ConnectionOptions = {
   password: 'password',
   database: 'real-world-api',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: false,
+  synchronize: true,
    migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
 };
 

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { TagService } from './tag.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiAcceptedResponse, ApiTags } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { TagModule } from './tag.module';
 
@@ -10,6 +10,7 @@ export class TagController {
   // constructor(private readonly tagSrv: TagService) {}
   constructor(private lazyModuleLoader: LazyModuleLoader) {}
 
+  @ApiAcceptedResponse({ description: 'Find all tags'})
   @Get()
   async findAll(): Promise<{ tags: string[] }> {
     const moduleRef = this.lazyModuleLoader.load(() => TagModule);

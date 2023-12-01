@@ -1,17 +1,23 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateUserDto {
   // dto stands for data transfer object
   //  this is just a plain TypeScript class with no nestjs
 
+
+
   @IsNotEmpty()
   @IsString()
   readonly username: string;
   
+  @ApiProperty({ example: 'ziad@gmail.com' })
   @IsNotEmpty()
   @IsEmail()
   readonly email: string;
   
+  
+  @ApiProperty({ example: 'hashed password' })
   @IsNotEmpty()
   readonly password: string;
 

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/user/entities/user.entity';
 import {
   BeforeUpdate,
@@ -9,21 +10,28 @@ import {
 
 @Entity({ name: 'articles' })
 export class Article {
+
+  @ApiProperty({description: 'Primary key as User Id', example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({description: 'unique title of the article', example: 'unique-title-sghs'})
   @Column()
   slug: string;
 
+  @ApiProperty({description: 'title of the article', example: 'title of article' })
   @Column()
   title: string;
 
+  @ApiProperty({ description: 'description of the article', example: 'this is the description about the ... subject'})
   @Column({ nullable: true })
   description: string;
 
+  @ApiProperty({description: 'whole body of the article', example: 'whole body of the article'})
   @Column({ nullable: true })
   body: string;
 
+  
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

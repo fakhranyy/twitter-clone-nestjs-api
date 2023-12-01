@@ -5,7 +5,7 @@ import { ProfileResponseInterface } from './types/profileResponse.interface';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ProfileModule } from './profile.module';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiAcceptedResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Profiles')
 @Controller('profiles')
@@ -13,6 +13,7 @@ export class ProfileController {
   // constructor(private readonly profileSer: ProfileService) {}
   constructor(private lazyModuleLoader: LazyModuleLoader) {}
 
+  @ApiAcceptedResponse({ description: 'get profile by username' })
   @Get(':username')
   async getProfile(
     @Userdeco('id') currentUserId: number,
@@ -26,6 +27,7 @@ export class ProfileController {
     // const profile = await
   }
 
+  @ApiCreatedResponse({description: 'make user following other user'})
   @Post(':username/follow')
   @UseGuards(AuthGuard)
   async followProfile(
@@ -38,6 +40,7 @@ export class ProfileController {
     return lazySrv.buildProfileResponse(profile); //* the response which made for the frontend
   }
 
+  @ApiCreatedResponse({description: 'remove user from following user '})
   @Delete(':username/unfollow')
   @UseGuards(AuthGuard)
   async unfollowProfile(

@@ -7,10 +7,10 @@ async function bootstrap() {
   const lazyModuleLoader = app.get(LazyModuleLoader);
 
   const config = new DocumentBuilder()
-    .setTitle('Real world Api')
+    .setTitle('twitter Clone Api')
     .setDescription('The Real World Api description')
     .setVersion('1.0')
-    .addTag('real-world')
+    .addTag('Twitter clone')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);

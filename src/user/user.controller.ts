@@ -15,7 +15,7 @@ import { User } from './entities/user.entity';
 import { Userdeco } from './decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiAcceptedResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
@@ -32,8 +32,7 @@ export class UserController {
 -> validationPipe use Dto class which are already used in the same endpoint 
 and i need to add validation rules from (class-validator & class-transformer) in dto class before using it to validate 
 */
-
-
+  @ApiAcceptedResponse({ description: 'Get all users' })
   @Get('users')
   async findAll () :Promise<User[]> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
@@ -41,6 +40,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
     return lazySrv.findAll();
   }
 
+  @ApiCreatedResponse({ description: 'Create user' , type: User })
   @Post('user')
   @UsePipes(new BackendValidationPipe())
   async createUser(
@@ -52,6 +52,8 @@ and i need to add validation rules from (class-validator & class-transformer) in
     return lazySrv.buildUserResponse(user);
   }
 
+  @ApiAcceptedResponse({ description: 'Login user as Auth user', type: CreateUserDto})
+  // @ApiBadRequestResponse({ description: 'there are some errors' }) 
   @Post('users/login')
   @UsePipes(new BackendValidationPipe())
   async login(
@@ -64,6 +66,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
     return lazySrv.buildUserResponse(await user);
   }
 
+  @ApiAcceptedResponse({ description: 'Get the current user'})
   @Get('user')
   @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized
   async currentUser(@Userdeco() user: User): Promise<UserResponseInterface> {
@@ -74,6 +77,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
     return lazySrv.buildUserResponse(user);
   }
 
+  @ApiAcceptedResponse({ description: 'Update the specific user'})
   @Patch('user')
   @UseGuards(AuthGuard)
   async updateCurrentUser(
