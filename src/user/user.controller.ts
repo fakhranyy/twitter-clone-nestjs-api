@@ -9,8 +9,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserResponseInterface } from './types/userResponse.interface';
-import { LoginUserDto } from './dto/loginUser.dto';
 import { User } from './entities/user.entity';
 import { Userdeco } from './decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -45,36 +43,22 @@ and i need to add validation rules from (class-validator & class-transformer) in
   @UsePipes(new BackendValidationPipe())
   async createUser(
     @Body('user') createUserDto: CreateUserDto, // because of @Body('user'), In postMan When i Passed params to test I should put it in object user: {id:'', email: '', etc}
-  ): Promise<UserResponseInterface> {
+  ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    const user = await lazySrv.createUSer(createUserDto);
-    return lazySrv.buildUserResponse(user);
-  }
-
-  @ApiAcceptedResponse({ description: 'Login user as Auth user', type: CreateUserDto})
-  // @ApiBadRequestResponse({ description: 'there are some errors' }) 
-  @Post('users/login')
-  @UsePipes(new BackendValidationPipe())
-  async login(
-    @Body('user') loginUserDto: LoginUserDto,
-  ): Promise<UserResponseInterface> {
-    // UserResponseInterface is specify for frontend response
-    const moduleRef = this.lazyModuleLoader.load(() => UserModule);
-    const lazySrv = (await moduleRef).get(UserService);
-    const user = lazySrv.logIn(loginUserDto);
-    return lazySrv.buildUserResponse(await user);
+    return await lazySrv.createUSer(createUserDto);
+    //! return lazySrv.buildUserResponse(user);
   }
 
   @ApiAcceptedResponse({ description: 'Get the current user'})
   @Get('user')
   @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized
-  async currentUser(@Userdeco() user: User): Promise<UserResponseInterface> {
+  async currentUser(@Userdeco() user: User): Promise<User> {
     console.log('user', user);
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
-    const lazySrv = (await moduleRef).get(UserService);
+    return (await moduleRef).get(UserService);
 
-    return lazySrv.buildUserResponse(user);
+    //! return lazySrv.buildUserResponse(user);
   }
 
   @ApiAcceptedResponse({ description: 'Update the specific user'})
@@ -83,10 +67,10 @@ and i need to add validation rules from (class-validator & class-transformer) in
   async updateCurrentUser(
     @Userdeco('id') currentUserId: number,
     @Body('user') updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseInterface> {
+  ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    const user = await lazySrv.updateUser(currentUserId, updateUserDto);
-    return lazySrv.buildUserResponse(user);
+    return await lazySrv.updateUser(currentUserId, updateUserDto);
+    //! return lazySrv.buildUserResponse(user);
   }
 }

@@ -3,9 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { sign } from 'jsonwebtoken';
-import { JWT_SECRET } from './config';
-import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { compare } from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -63,6 +60,7 @@ export class UserService {
         select: ['id', 'username', 'password', 'email', 'bio', 'image'],
       },
     );
+
     if (!user) {
       throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -82,6 +80,14 @@ export class UserService {
     return this.repo.findOneBy({ id });
   }
 
+  async findOne(username: string): Promise<User> {
+    return await this.repo.findOne({
+      where: {
+        username: username,
+      },
+    });
+  }
+
   async updateUser(
     currentUserId: number,
     updateUserDto: UpdateUserDto,
@@ -91,24 +97,4 @@ export class UserService {
     return await this.repo.save(user);
   }
 
-  generateJwt(user: User): string {
-    return sign(
-      // must back to us a string because jwt is just a string
-      {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
-      JWT_SECRET,
-    );
-  }
-  // we're using Dto only for payload
-  buildUserResponse(user: User): UserResponseInterface {
-    return {
-      user: {
-        ...user,
-        token: this.generateJwt(user),
-      },
-    };
-  }
 }

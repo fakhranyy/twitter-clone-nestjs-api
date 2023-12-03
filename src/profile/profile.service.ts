@@ -25,10 +25,12 @@ export class ProfileService {
       throw new HttpException("Profile doesn't exist", HttpStatus.NOT_FOUND);
     }
 
-    const follow = await this.followRepo.findOne({ where: {
-      followerId: currentUserId,
-      followingId: user.id, 
-    }})
+    const follow = await this.followRepo.findOne({
+      where: {
+        followerId: currentUserId,
+        followingId: user.id,
+      },
+    });
 
     return { ...user, following: Boolean(follow) }; //* ig the follow has record it'll be return true, and if not it'll back false
   }
@@ -54,7 +56,7 @@ export class ProfileService {
       );
     }
 
-    const follow = await this.followRepo.findOne({ 
+    const follow = await this.followRepo.findOne({
       //* make sure that the followerId doesn't follow followingId
       where: {
         followerId: currentUserId, //* the one who follows.
@@ -93,14 +95,14 @@ export class ProfileService {
       );
     }
 
-    await this.followRepo.delete({ //* unfollow the user 
+    await this.followRepo.delete({
+      //* unfollow the user
       followerId: currentUserId,
-      followingId: user.id
+      followingId: user.id,
     });
 
     return { ...user, following: false }; //* restructure user with adding new property into it (following)
   }
-
 
   async buildProfileResponse(
     profile: ProfileType,
