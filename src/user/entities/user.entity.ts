@@ -10,10 +10,11 @@ import {
 import { hash } from 'bcrypt';
 import { Article } from 'src/article/entities/article.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Entity({ name: 'users' })
 export class User {
-  @ApiProperty({example: 'User id Like 1'})
+  @ApiProperty({ example: 'User id Like 1' })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -45,9 +46,10 @@ export class User {
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
 
+  comments: Comment[];
+
   @ManyToMany(() => Article)
   @JoinTable()
   favorites: Article[]; //? the 3rd table name will be ( Plural Noun of entityClassOne _ relationName _ Plural Noun of entityClassTwo )
   //* in our case the 3rd table will be users_favorites_articles
-
 }

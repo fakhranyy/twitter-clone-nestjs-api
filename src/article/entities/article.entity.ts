@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Comment } from 'src/comment/entities/comment.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   BeforeUpdate,
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -48,6 +50,10 @@ export class Article {
   updateTimestamp() {
     this.updatedAt = new Date();
   }
+
+  @OneToMany(() => Comment, (comment) => comment.article )
+  comments: Comment[];
+
 
   @ManyToOne(() => User, (user) => user.articles, { eager: true })
   //? eager : true -> this option means that we will always load automatically this relation (author for our article)
