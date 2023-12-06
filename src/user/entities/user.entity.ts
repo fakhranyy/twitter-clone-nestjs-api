@@ -46,6 +46,7 @@ export class User {
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
 
+  @OneToMany(() => Comment, (comment) => comment.user )
   comments: Comment[];
 
   @ManyToMany(() => Article)

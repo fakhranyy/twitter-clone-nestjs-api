@@ -7,8 +7,11 @@ export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true})
   text: string;
+
+  @Column({ nullable: true})
+  commentsCount: number;
 
   @ManyToOne(() => Article, (article) => article.comments)
   article: Article;

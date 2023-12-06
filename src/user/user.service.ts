@@ -10,21 +10,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly repo: Repository<User>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
   async findAll(): Promise<User[]> {
-    return await this.repo.find();
+    return await this.userRepo.find();
   }
 
   async createUSer(createUserDto: CreateUserDto): Promise<User> {
     const errorResponse = {
       errors: {},
     };
-    const userByEmail = await this.repo.findOne({
+    const userByEmail = await this.userRepo.findOne({
       where: { email: createUserDto.email },
     });
-    const userByUsername = await this.repo.findOne({
+    const userByUsername = await this.userRepo.findOne({
       where: { username: createUserDto.username },
     });
 
@@ -41,7 +41,7 @@ export class UserService {
     }
     const newUser = new User();
     Object.assign(newUser, createUserDto); // we Assigned all properties from createUserDto inside our newUser
-    return await this.repo.save(newUser);
+    return await this.userRepo.save(newUser);
   }
 
   async logIn(loginUserDto: LoginUserDto): Promise<User> {
@@ -50,7 +50,7 @@ export class UserService {
         'email or password': 'is invalid',
       },
     };
-    const user = await this.repo.findOne(
+    const user = await this.userRepo.findOne(
       // we use select here because in userEntity
       // we hided the password by write {select: false} and we need to use the passord to check if it's auth user
       // so we write all fields that we needed
@@ -77,11 +77,11 @@ export class UserService {
   }
 
   async findById(id: number): Promise<User> {
-    return this.repo.findOneBy({ id });
+    return this.userRepo.findOneBy({ id });
   }
 
   async findOne(username: string): Promise<User> {
-    return await this.repo.findOne({
+    return await this.userRepo.findOne({
       where: {
         username: username,
       },
@@ -94,7 +94,7 @@ export class UserService {
   ): Promise<User> {
     const user = await this.findById(currentUserId);
     Object.assign(user, updateUserDto); //  Object.assign(target, source)
-    return await this.repo.save(user);
+    return await this.userRepo.save(user);
   }
 
 }

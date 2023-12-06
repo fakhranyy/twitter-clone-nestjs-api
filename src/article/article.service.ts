@@ -92,7 +92,6 @@ export class ArticleService {
       const favorited = favoriteIds.includes(article.id);
       return { ...article, favorited };
     });
-
     return { articles: articlesWithFavorited, articlesCount };
   }
 
@@ -172,7 +171,7 @@ export class ArticleService {
       ) === -1; //* in this case, if our findIndex return minus one, this means that the article is note favorite
 
     if (isArticleNotFavorited) {
-      user.favorites.push(article);
+      user.favorites.push(article); 
       article.favoritesCount++;
       await this.userRepo.save(user);
       await this.artRepo.save(article);
