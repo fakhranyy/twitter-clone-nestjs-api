@@ -45,17 +45,17 @@ export class Article {
 
   @Column({ default: 0 })
   favoritesCount: number;
-
-  @BeforeUpdate()
-  updateTimestamp() {
-    this.updatedAt = new Date();
-  }
-
+  
   @OneToMany(() => Comment, (comment) => comment.article )
   comments: Comment[];
-
-
+  
   @ManyToOne(() => User, (user) => user.articles, { eager: true })
   //? eager : true -> this option means that we will always load automatically this relation (author for our article)
   author: User; // first argument is the field name, it's not always should be the same name of entity class
+  
+
+    @BeforeUpdate()
+    updateTimestamp() {
+      this.updatedAt = new Date();
+    }
 }

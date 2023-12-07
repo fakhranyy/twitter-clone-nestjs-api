@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  ManyToOne,
 } from 'typeorm';
 import { hash } from 'bcrypt';
 import { Article } from 'src/article/entities/article.entity';
@@ -38,19 +39,20 @@ export class User {
   @Column({ select: false }) //* it means that in our all requests, by default we're not selecting the password field
   password: string;
 
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await hash(this.password, 10);
-  }
-
-  @OneToMany(() => Article, (article) => article.author)
-  articles: Article[];
-
   @OneToMany(() => Comment, (comment) => comment.user )
   comments: Comment[];
-
+  
+  @OneToMany(() => Article, (article) => article.author)
+  articles: Article[];
+  
   @ManyToMany(() => Article)
   @JoinTable()
   favorites: Article[]; //? the 3rd table name will be ( Plural Noun of entityClassOne _ relationName _ Plural Noun of entityClassTwo )
   //* in our case the 3rd table will be users_favorites_articles
+  
+  
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await hash(this.password, 10);
+  }
 }

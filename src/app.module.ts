@@ -18,7 +18,7 @@ import { CommentModule } from './comment/comment.module';
     ArticleModule,
     ProfileModule,
     AuthModule,
-    CommentModule
+    CommentModule,
   ], // should import it to let me use config vars in database module
   controllers: [],
   providers: [],

@@ -1,21 +1,25 @@
-import { Article } from 'src/article/entities/article.entity';
-import { User } from 'src/user/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { IsNumber, IsString } from "class-validator";
+import { Article } from "src/article/entities/article.entity";
+import { User } from "src/user/entities/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('comments')
 export class Comment {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ nullable: true})
-  text: string;
+    @IsString()
+    @Column({ nullable: true })
+    text: string;
+    
+    @IsNumber()
+    @Column({ nullable: true })
+    commentCount: number;
 
-  @Column({ nullable: true})
-  commentsCount: number;
 
-  @ManyToOne(() => Article, (article) => article.comments)
-  article: Article;
+    @ManyToOne(() => User, (user) => user.comments, { cascade: true } )
+    user: User;
 
-  @ManyToOne(() => User, (user) => user.comments)
-  user: User;
+    @ManyToOne(() => Article, (article) => article.comments, { cascade: true } )
+    article: Article;
 }
