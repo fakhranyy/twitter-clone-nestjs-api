@@ -11,7 +11,7 @@ import { Userdeco } from 'src/user/decorators/user.decorator';
 import { ProfileResponseInterface } from './types/profileResponse.interface';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ProfileModule } from './profile.module';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+// import { AuthGuard } from 'src/common/guards/auth.guard';
 import {
   ApiAcceptedResponse,
   ApiCreatedResponse,
@@ -40,7 +40,7 @@ export class ProfileController {
 
   @ApiCreatedResponse({ description: 'make user following other user' })
   @Post(':username/follow')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async followProfile(
     @Userdeco('id') currentUserId: number,
     @Param('username') profileUsername: string,
@@ -53,7 +53,7 @@ export class ProfileController {
 
   @ApiCreatedResponse({ description: 'remove user from following user ' })
   @Delete(':username/unfollow')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async unfollowProfile(
     @Userdeco('id') currentUserId: number,
     @Param('username') profileUsername: string,

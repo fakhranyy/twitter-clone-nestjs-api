@@ -12,17 +12,24 @@ import {
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Userdeco } from 'src/user/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { ArticleResponseInterface } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { ApiAcceptedResponse, ApiBadRequestResponse, ApiCreatedResponse, ApiDefaultResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiAcceptedResponse,
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiDefaultResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ArticleModule } from './article.module';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { Article } from './entities/article.entity';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('articles')
 @ApiTags('Articles Apis')
@@ -47,11 +54,13 @@ export class ArticleController {
   }
 
   @Post()
-  @ApiCreatedResponse({ 
-    description : 'create an article ',
-    type: Article
-   })
-  @ApiBadRequestResponse({ description: 'article cannot be created, try Again !' })
+  @ApiCreatedResponse({
+    description: 'create an article ',
+    type: Article,
+  })
+  @ApiBadRequestResponse({
+    description: 'article cannot be created, try Again !',
+  })
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
   @UseGuards(AuthGuard)
   @UsePipes(new BackendValidationPipe())
@@ -66,7 +75,9 @@ export class ArticleController {
   }
 
   @ApiAcceptedResponse({ description: 'Get single article by slug' })
-  @ApiBadRequestResponse({ description: ' cannot get the article, there is no article by this slug' })
+  @ApiBadRequestResponse({
+    description: ' cannot get the article, there is no article by this slug',
+  })
   @Get('single/:slug') //* param is a optional field
   async getSingleArticle(
     @Param('slug') slug: string,
@@ -77,7 +88,10 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
   @ApiAcceptedResponse({ description: 'Delete single article by slug' })
-  @ApiBadRequestResponse({ description: 'Cannot delete this article , There is no article by this slug' })
+  @ApiBadRequestResponse({
+    description:
+      'Cannot delete this article , There is no article by this slug',
+  })
   @Delete(':slug')
   @UseGuards(AuthGuard)
   async deleteArticle(
@@ -89,9 +103,13 @@ export class ArticleController {
     return await lazySrv.deleteArticle(slug, currentUserId);
   }
 
-
-  @ApiCreatedResponse({ description: 'find single article by slug and update it' })
-  @ApiBadRequestResponse({ description: 'Cannot update this article , There is no article by this slug' })
+  @ApiCreatedResponse({
+    description: 'find single article by slug and update it',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'Cannot update this article , There is no article by this slug',
+  })
   @Patch(':slug')
   //! @Put(':slug')
   @UseGuards(AuthGuard) //* thats mean it should be Authorized user
@@ -111,9 +129,14 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
 
-  @ApiCreatedResponse({ description: 'Add single article to favorites by slug' })
-  @ApiBadRequestResponse({ description: 'Cannot add this article to favorites , There is no article by this slug' })
-  @Post(':slug/favorite')
+  @ApiCreatedResponse({
+    description: 'Add single article to favorites by slug',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'Cannot add this article to favorites , There is no article by this slug',
+  })
+  @Post(':slug')
   @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async addArticleToFavorites(
     @Userdeco('id') currentUserId: number,
@@ -125,8 +148,13 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
 
-  @ApiAcceptedResponse({ description: 'Delete single article from favorites by slug' })
-  @ApiBadRequestResponse({ description: 'Cannot delete this article , There is no article by this slug' })
+  @ApiAcceptedResponse({
+    description: 'Delete single article from favorites by slug',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'Cannot delete this article , There is no article by this slug',
+  })
   @Delete(':slug/favorite')
   @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async deleteArticleFromFavorites(
@@ -143,7 +171,9 @@ export class ArticleController {
     return lazySrv.buildArticaleResponse(article);
   }
 
-  @ApiAcceptedResponse({ description: 'Articles feed from the users whose i followed' })
+  @ApiAcceptedResponse({
+    description: 'Articles feed from the users whose i followed',
+  })
   @ApiBadRequestResponse({ description: 'there are some errors' })
   @Get('feed')
   @UseGuards(AuthGuard)
@@ -155,5 +185,4 @@ export class ArticleController {
     const lazySrv = (await moduleRef).get(ArticleService);
     return await lazySrv.getFeed(currentUserId, query);
   }
-
 }

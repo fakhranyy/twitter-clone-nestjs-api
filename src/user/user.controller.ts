@@ -6,6 +6,7 @@ import {
   UsePipes,
   UseGuards,
   Patch,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,7 +14,11 @@ import { User } from './entities/user.entity';
 import { Userdeco } from './decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiAcceptedResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiAcceptedResponse,
+  ApiCreatedResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
@@ -32,13 +37,13 @@ and i need to add validation rules from (class-validator & class-transformer) in
 */
   @ApiAcceptedResponse({ description: 'Get all users' })
   @Get('users')
-  async findAll () :Promise<User[]> {
+  async findAll(): Promise<User[]> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    return lazySrv.findAll();
+    return await lazySrv.findAll();
   }
 
-  @ApiCreatedResponse({ description: 'Create user' , type: User })
+  @ApiCreatedResponse({ description: 'Create user', type: User })
   @Post('user')
   @UsePipes(new BackendValidationPipe())
   async createUser(
@@ -46,22 +51,21 @@ and i need to add validation rules from (class-validator & class-transformer) in
   ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    return await lazySrv.createUSer(createUserDto);
-    //! return lazySrv.buildUserResponse(user);
+    const user = await lazySrv.createUSer(createUserDto);
+    return lazySrv.buildUserResponse(user);
   }
 
-  @ApiAcceptedResponse({ description: 'Get the current user'})
-  @Get('user')
+  @ApiAcceptedResponse({ description: 'Get the current user' })
+  @Get('users/:username')
   @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized
-  async currentUser(@Userdeco() user: User): Promise<User> {
-    console.log('user', user);
+  //! async currentUser(@Userdeco() user: User): Promise<User> {
+  async currentUser(@Param('username') username: string ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
-    return (await moduleRef).get(UserService);
-
-    //! return lazySrv.buildUserResponse(user);
+    const lazySrv = (await moduleRef).get(UserService);
+    return await lazySrv.findOne(username)
   }
 
-  @ApiAcceptedResponse({ description: 'Update the specific user'})
+  @ApiAcceptedResponse({ description: 'Update the specific user' })
   @Patch('user')
   @UseGuards(AuthGuard)
   async updateCurrentUser(
@@ -70,7 +74,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
   ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    return await lazySrv.updateUser(currentUserId, updateUserDto);
-    //! return lazySrv.buildUserResponse(user);
+    const user = await lazySrv.updateUser(currentUserId, updateUserDto);
+    return lazySrv.buildUserResponse(user);
   }
 }

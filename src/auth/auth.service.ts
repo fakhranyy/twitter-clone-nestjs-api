@@ -1,30 +1,27 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userSrv: UserService,
-    private readonly jwtSrv: JwtService,
+    private userSrv: UserService,
+    private jwtService: JwtService
   ) {}
 
-  async signIn(username: string, pass: string): Promise<any> {
-    const user = await this.userSrv.findOne(username);
-    if (user?.password !== pass) {
+  // async signIn(username: string, password: string) {
+    async signIn(signInDto: SignInDto) {
+    const user = await this.userSrv.findOne(signInDto.username);
+    if (user?.password !== signInDto.password) {
       throw new UnauthorizedException();
     }
-    //! delete user.password;
-    //! return user;
-    //! const { password, ...result } = user;
-    // TODO: Generate a JWT and return it here
-
     const payload = { sub: user.id, username: user.username };
     return {
       user,
-      access_token: await this.jwtSrv.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload),
     };
-    //* instead of the user object
-    //! return result;
   }
 }
+
+// Ideally, instead of using the Record<string, any> type, we should use a DTO class to define the shape of the request body. See the validation chapter for more information.
