@@ -7,23 +7,26 @@ import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
+import { Request } from 'express';
 
 @Injectable()
 export class CommentService {
   constructor(
-    private readonly artSrv: ArticleService,
     @InjectRepository(Comment)
     private readonly commentRepo: Repository<Comment>,
-    private readonly userSrv: UserService
+    @InjectRepository(User) 
+    private readonly userRepo: Repository<User>,
+    private readonly artSrv: ArticleService,
+    private readonly userSrv: UserService,
   ) {}
   async createComment(
     createCommentDto: CreateCommentDto,
     //! currentUserId: User,
-     username: string,
+    username: string,
     slug: string,
   ): Promise<Comment> {
     const comments = new Comment();
-    const user = await this.userSrv.findOne(username)
+    const user = await this.userSrv.findOne(username);
     const article = await this.artSrv.findBySlug(slug);
     comments.article = article;
     comments.user = user;
@@ -33,4 +36,12 @@ export class CommentService {
 
     return await this.commentRepo.save(comments);
   }
+
+  async deleteComment(commentId: number){
+    const comment = await this.commentRepo.findOne({ where: {id: commentId}})
+     await this.commentRepo.remove(comment);
+     return 'Comment Deleted !';
+  }
+
+  async editComment() {}
 }

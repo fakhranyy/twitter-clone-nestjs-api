@@ -143,6 +143,7 @@ export class ArticleService {
   async updateArticle(
     slug: string,
     updateArticleDto: UpdateArticleDto,
+    
     currentUserId: number,
   ): Promise<Article> {
     const article = await this.findBySlug(slug);
