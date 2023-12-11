@@ -1,4 +1,4 @@
-import { Injectable, Param } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
@@ -14,7 +14,7 @@ export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepo: Repository<Comment>,
-    @InjectRepository(User) 
+    @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly artSrv: ArticleService,
     private readonly userSrv: UserService,
@@ -37,11 +37,22 @@ export class CommentService {
     return await this.commentRepo.save(comments);
   }
 
-  async deleteComment(commentId: number){
-    const comment = await this.commentRepo.findOne({ where: {id: commentId}})
-     await this.commentRepo.remove(comment);
-     return 'Comment Deleted !';
+  async deleteComment(commentId: number) {
+    const comment = await this.commentRepo.findOne({
+      where: { id: commentId },
+      relations: ['user'],
+    });
+    const commentAuthor = comment.user;
+
+    console.log(commentAuthor);
+    if (commentAuthor) {
+      return await this.commentRepo.remove(comment);
+    }
+    throw new HttpException(
+      "you can't delete this comment, You're Not the auther of this comment",
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 
-  async editComment() {}
+  // async editComment() {}
 }

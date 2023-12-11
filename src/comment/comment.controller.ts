@@ -43,5 +43,5 @@ export class CommentController {
 
   @Patch(':commentId')
   @UseGuards(AuthGuard)
-  async editComment (@Param('commentId') commentId: number) {}
+  async editComment () {}
 }
