@@ -42,7 +42,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
   async findAll(@Req() request: Request): Promise<User[]> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    return await lazySrv.findAll(request);
+    return await lazySrv.findAll();
   }
 
   @ApiCreatedResponse({ description: 'Create user', type: User })

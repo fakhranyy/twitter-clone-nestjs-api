@@ -12,8 +12,7 @@ export class UserService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  async findAll(request: Request): Promise<User[]> {
-    const user = request;
+  async findAll(): Promise<User[]> {
     return await this.userRepo.find();
   }
 
