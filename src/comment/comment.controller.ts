@@ -11,7 +11,7 @@ import {
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+// import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Request } from 'express';
 
 @Controller('comments')
@@ -19,7 +19,7 @@ export class CommentController {
   constructor(private readonly commentSrv: CommentService) {}
 
   @Post(':username/:slug')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async createComment(
     @Body() createCommentDto: CreateCommentDto,
     // @Userdeco('id') currentUserId: User,
@@ -34,7 +34,7 @@ export class CommentController {
   }
 
   @Delete(':commentId')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async deleteComment(
     @Param('commentId') commentId: number,
   ) {
@@ -42,6 +42,6 @@ export class CommentController {
   }
 
   @Patch(':commentId')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async editComment () {}
 }

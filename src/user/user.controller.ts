@@ -7,12 +7,13 @@ import {
   UseGuards,
   Patch,
   Param,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Userdeco } from './decorators/user.decorator';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+// import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiAcceptedResponse,
@@ -22,6 +23,7 @@ import {
 import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
+import { Request } from 'express';
 
 @Controller()
 @ApiTags('Users Apis')
@@ -37,10 +39,10 @@ and i need to add validation rules from (class-validator & class-transformer) in
 */
   @ApiAcceptedResponse({ description: 'Get all users' })
   @Get('users')
-  async findAll(): Promise<User[]> {
+  async findAll(@Req() request: Request): Promise<User[]> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    return await lazySrv.findAll();
+    return await lazySrv.findAll(request);
   }
 
   @ApiCreatedResponse({ description: 'Create user', type: User })
@@ -57,7 +59,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
 
   @ApiAcceptedResponse({ description: 'Get the current user' })
   @Get('users/:username')
-  @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized
+  // @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized
   //! async currentUser(@Userdeco() user: User): Promise<User> {
   async currentUser(@Param('username') username: string ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
@@ -67,7 +69,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
 
   @ApiAcceptedResponse({ description: 'Update the specific user' })
   @Patch('user')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async updateCurrentUser(
     @Userdeco('id') currentUserId: number,
     @Body('user') updateUserDto: UpdateUserDto,

@@ -37,20 +37,21 @@ export class CommentService {
     return await this.commentRepo.save(comments);
   }
 
-  async deleteComment(commentId: number) {
+  async deleteComment(
+      commentId: number,
+       ) {
     const comment = await this.commentRepo.findOne({
       where: { id: commentId },
-      relations: ['user'],
+      relations: ['user', 'article'],
     });
     const commentAuthor = comment.user;
-
-    console.log(commentAuthor);
-    if (commentAuthor) {
+    const commentsArticle = comment.article;
+    if (commentAuthor  || commentsArticle) {
       return await this.commentRepo.remove(comment);
     }
     throw new HttpException(
-      "you can't delete this comment, You're Not the auther of this comment",
-      HttpStatus.UNAUTHORIZED,
+      "you can't delete this comment, You're Not Authorized",
+     HttpStatus.UNAUTHORIZED,
     );
   }
 

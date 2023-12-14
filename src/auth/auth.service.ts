@@ -10,18 +10,20 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  // async signIn(username: string, password: string) {
-    async signIn(signInDto: SignInDto) {
-    const user = await this.userSrv.findOne(signInDto.username);
-    if (user?.password !== signInDto.password) {
-      throw new UnauthorizedException();
+    // async signIn(signInDto: SignInDto) {
+    async validateUser(username: string, pass: string): Promise<any> {
+      const user = await this.userSrv.findOne(username);
+      if (user && user.password === pass) {
+        const { password, ...result } = user;
+        return result;
+      }
+      return null;
     }
-    const payload = { sub: user.id, username: user.username };
-    return {
-      user,
-      access_token: await this.jwtService.signAsync(payload),
-    };
-  }
-}
 
-// Ideally, instead of using the Record<string, any> type, we should use a DTO class to define the shape of the request body. See the validation chapter for more information.
+    async login(user: any) {
+      const payload = { username: user.username, sub: user.userId };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    }
+}

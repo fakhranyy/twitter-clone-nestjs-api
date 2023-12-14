@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,8 @@ export class UserService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
+  async findAll(request: Request): Promise<User[]> {
+    const user = request;
     return await this.userRepo.find();
   }
 

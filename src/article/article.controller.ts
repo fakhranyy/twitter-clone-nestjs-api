@@ -29,7 +29,7 @@ import { ArticleModule } from './article.module';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { Article } from './entities/article.entity';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+// import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('articles')
 @ApiTags('Articles Apis')
@@ -62,7 +62,7 @@ export class ArticleController {
     description: 'article cannot be created, try Again !',
   })
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @UsePipes(new BackendValidationPipe())
   async create(
     @Userdeco() currentUser: User,
@@ -93,7 +93,7 @@ export class ArticleController {
       'Cannot delete this article , There is no article by this slug',
   })
   @Delete(':slug')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async deleteArticle(
     @Userdeco('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -112,7 +112,7 @@ export class ArticleController {
   })
   @Patch(':slug')
   //! @Put(':slug')
-  @UseGuards(AuthGuard) //* thats mean it should be Authorized user
+  // @UseGuards(AuthGuard) //* thats mean it should be Authorized user
   @UsePipes(new BackendValidationPipe()) //* that validationPipe would implement this pipe on params
   async updateArticle(
     @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
@@ -137,7 +137,7 @@ export class ArticleController {
       'Cannot add this article to favorites , There is no article by this slug',
   })
   @Post(':slug')
-  @UseGuards(AuthGuard) //* it's only allowed to authorized users
+  // @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async addArticleToFavorites(
     @Userdeco('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -156,7 +156,7 @@ export class ArticleController {
       'Cannot delete this article , There is no article by this slug',
   })
   @Delete(':slug/favorite')
-  @UseGuards(AuthGuard) //* it's only allowed to authorized users
+  // @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async deleteArticleFromFavorites(
     @Userdeco('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -176,7 +176,7 @@ export class ArticleController {
   })
   @ApiBadRequestResponse({ description: 'there are some errors' })
   @Get('feed')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   async getFeed(
     @Userdeco('id') currentUserId: number,
     @Query() query: any,
