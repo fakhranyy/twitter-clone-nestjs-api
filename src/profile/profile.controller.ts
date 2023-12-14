@@ -17,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Profiles')
 @Controller('profiles')
@@ -40,7 +41,7 @@ export class ProfileController {
 
   @ApiCreatedResponse({ description: 'make user following other user' })
   @Post(':username/follow')
-  // @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async followProfile(
     @Userdeco('id') currentUserId: number,
     @Param('username') profileUsername: string,
@@ -53,7 +54,7 @@ export class ProfileController {
 
   @ApiCreatedResponse({ description: 'remove user from following user ' })
   @Delete(':username/unfollow')
-  // @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async unfollowProfile(
     @Userdeco('id') currentUserId: number,
     @Param('username') profileUsername: string,

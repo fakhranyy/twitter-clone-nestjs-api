@@ -3,45 +3,54 @@ import {
   Post,
   Body,
   Param,
-  Req,
   UseGuards,
   Patch,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
-// import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { Request } from 'express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { LazyModuleLoader } from '@nestjs/core';
+import { CommentModule } from './comment.module';
 
 @Controller('comments')
 export class CommentController {
-  constructor(private readonly commentSrv: CommentService) {}
+  constructor(
+    private readonly commentSrv: CommentService,
+    private readonly lazyModuleLoader: LazyModuleLoader,
+  ) {}
 
-  @Post(':username/:slug')
-  // @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @Post('/:slug')
   async createComment(
     @Body() createCommentDto: CreateCommentDto,
-    // @Userdeco('id') currentUserId: User,
-    @Param('username') username: string,
+    @Request() req,
     @Param(':slug') slug: string,
   ): Promise<Comment> {
-    return await this.commentSrv.createComment(
-      createCommentDto,
-      username,
-      slug,
-    );
+    const moduleRef = await this.lazyModuleLoader.load(() => CommentModule);
+    const lazySrv = moduleRef.get(CommentService);
+    return lazySrv.createComment(createCommentDto, req, slug);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':commentId')
-  // @UseGuards(AuthGuard)
-  async deleteComment(
-    @Param('commentId') commentId: number,
-  ) {
-    return await this.commentSrv.deleteComment(commentId)
+  async deleteComment(@Request() req, @Param('commentId') commentId: number) {
+    const moduleRef = await this.lazyModuleLoader.load(() => CommentModule);
+    const lazySrv = moduleRef.get(CommentService);
+    return lazySrv.deleteComment(commentId, req);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':commentId')
-  // @UseGuards(AuthGuard)
-  async editComment () {}
+  async editComment(
+    @Param('commentId') commentId: number,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ) {
+    const moduleRef = await this.lazyModuleLoader.load(() => CommentModule);
+    const lazySrv = moduleRef.get(CommentService);
+    return lazySrv.editComment(commentId, updateCommentDto);
+  }
 }

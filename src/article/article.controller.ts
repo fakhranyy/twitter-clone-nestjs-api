@@ -29,12 +29,11 @@ import { ArticleModule } from './article.module';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { Article } from './entities/article.entity';
-// import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('articles')
 @ApiTags('Articles Apis')
 export class ArticleController {
-  //! constructor(private readonly srv: ArticleService) {}
   constructor(private lazyModuleLoader: LazyModuleLoader) {}
 
   //? what is @Query ?
@@ -62,14 +61,14 @@ export class ArticleController {
     description: 'article cannot be created, try Again !',
   })
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
-  // @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new BackendValidationPipe())
   async create(
     @Userdeco() currentUser: User,
     @Body('article') createArticleDto: CreateArticleDto,
   ): Promise<ArticleResponseInterface> {
-    const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
-    const lazySrv = (await moduleRef).get(ArticleService);
+    const moduleRef = await this.lazyModuleLoader.load(() => ArticleModule);
+    const lazySrv = moduleRef.get(ArticleService);
     const article = await lazySrv.createArticle(currentUser, createArticleDto);
     return lazySrv.buildArticaleResponse(article);
   }
@@ -78,6 +77,7 @@ export class ArticleController {
   @ApiBadRequestResponse({
     description: ' cannot get the article, there is no article by this slug',
   })
+
   @Get('single/:slug') //* param is a optional field
   async getSingleArticle(
     @Param('slug') slug: string,
@@ -92,8 +92,8 @@ export class ArticleController {
     description:
       'Cannot delete this article , There is no article by this slug',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':slug')
-  // @UseGuards(AuthGuard)
   async deleteArticle(
     @Userdeco('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -110,9 +110,8 @@ export class ArticleController {
     description:
       'Cannot update this article , There is no article by this slug',
   })
+  @UseGuards(JwtAuthGuard)
   @Patch(':slug')
-  //! @Put(':slug')
-  // @UseGuards(AuthGuard) //* thats mean it should be Authorized user
   @UsePipes(new BackendValidationPipe()) //* that validationPipe would implement this pipe on params
   async updateArticle(
     @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
@@ -136,8 +135,8 @@ export class ArticleController {
     description:
       'Cannot add this article to favorites , There is no article by this slug',
   })
+  @UseGuards(JwtAuthGuard)
   @Post(':slug')
-  // @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async addArticleToFavorites(
     @Userdeco('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -155,8 +154,8 @@ export class ArticleController {
     description:
       'Cannot delete this article , There is no article by this slug',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':slug/favorite')
-  // @UseGuards(AuthGuard) //* it's only allowed to authorized users
   async deleteArticleFromFavorites(
     @Userdeco('id') currentUserId: number,
     @Param('slug') slug: string,
@@ -175,8 +174,8 @@ export class ArticleController {
     description: 'Articles feed from the users whose i followed',
   })
   @ApiBadRequestResponse({ description: 'there are some errors' })
+  @UseGuards(JwtAuthGuard)
   @Get('feed')
-  // @UseGuards(AuthGuard)
   async getFeed(
     @Userdeco('id') currentUserId: number,
     @Query() query: any,

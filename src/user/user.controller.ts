@@ -24,6 +24,7 @@ import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { Request } from 'express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller()
 @ApiTags('Users Apis')
@@ -58,18 +59,17 @@ and i need to add validation rules from (class-validator & class-transformer) in
   }
 
   @ApiAcceptedResponse({ description: 'Get the current user' })
+  @UseGuards(JwtAuthGuard)
   @Get('users/:username')
-  // @UseGuards(AuthGuard) // check if the user is Authorized or back an error 401 UnAuthorized
-  //! async currentUser(@Userdeco() user: User): Promise<User> {
-  async currentUser(@Param('username') username: string ): Promise<User> {
+  async currentUser(@Param('username') username: string): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    return await lazySrv.findOne(username)
+    return await lazySrv.findOne(username);
   }
 
   @ApiAcceptedResponse({ description: 'Update the specific user' })
+  @UseGuards(JwtAuthGuard)
   @Patch('user')
-  // @UseGuards(AuthGuard)
   async updateCurrentUser(
     @Userdeco('id') currentUserId: number,
     @Body('user') updateUserDto: UpdateUserDto,
