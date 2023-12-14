@@ -18,13 +18,13 @@ export class AuthController {
   @UseGuards(LocalAuthGuard) //* check the username and password
   @Post('auth/login')
   async login(@Request() req) {
+    console.log('req' ,req.user)
     return this.authService.login(req.user);
   }
   
   @UseGuards(JwtAuthGuard) //* check if a valid Jwt exists
   @Get('profile')
   getProfile(@Request() req) {
-    console.log(req.user)
     return req.user;
   }
 }
