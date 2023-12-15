@@ -56,11 +56,22 @@ export class CommentService {
     );
   }
 
-  async editComment(commentId: number, updateCommentDto: UpdateCommentDto) {
+  async editComment(
+    commentId: number,
+    updateCommentDto: UpdateCommentDto,
+    req: any,
+  ) {
     const comment = await this.commentRepo.findOne({
       where: { id: commentId },
     });
     Object.assign(comment, updateCommentDto);
-    return await this.commentRepo.save(comment);
+    const user = comment.user;
+    if (user === req.user) {
+      return await this.commentRepo.save(comment);
+    }
+    throw new HttpException(
+      "you can't delete this comment, You're Not Authorized",
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 }

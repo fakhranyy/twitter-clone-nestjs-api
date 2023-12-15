@@ -48,9 +48,10 @@ export class CommentController {
   async editComment(
     @Param('commentId') commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
+    @Request() req,
   ) {
     const moduleRef = await this.lazyModuleLoader.load(() => CommentModule);
     const lazySrv = moduleRef.get(CommentService);
-    return lazySrv.editComment(commentId, updateCommentDto);
+    return lazySrv.editComment(commentId, updateCommentDto, req);
   }
 }
