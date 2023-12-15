@@ -15,7 +15,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { LazyModuleLoader } from '@nestjs/core';
 import { CommentModule } from './comment.module';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Comments Apis')
 @Controller('comments')
 export class CommentController {
   constructor(

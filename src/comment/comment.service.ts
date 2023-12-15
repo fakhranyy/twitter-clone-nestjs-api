@@ -21,8 +21,6 @@ export class CommentService {
   ) {}
   async createComment(
     createCommentDto: CreateCommentDto,
-    //! currentUserId: User,
-    // username: string,
     req: any,
     slug: string,
   ): Promise<Comment> {
@@ -32,7 +30,6 @@ export class CommentService {
 
     comments.article = article;
     comments.user = user;
-    // comments.commentCount: number = 0;
     Object.assign(comments, createCommentDto);
     delete user.password;
 
@@ -63,10 +60,12 @@ export class CommentService {
   ) {
     const comment = await this.commentRepo.findOne({
       where: { id: commentId },
+      relations: ['user'],
     });
+    const user = comment.user.username;
     Object.assign(comment, updateCommentDto);
-    const user = comment.user;
-    if (user === req.user) {
+
+    if (req.user.username === user) {
       return await this.commentRepo.save(comment);
     }
     throw new HttpException(

@@ -12,7 +12,10 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LazyModuleLoader } from '@nestjs/core';
 import { AuthModule } from './auth.module';
+import { ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags('Auth Apis')
 @Controller()
 export class AuthController {
   constructor(
@@ -25,7 +28,6 @@ export class AuthController {
   async login(@Request() req) {
     const moduleRef = this.lazyModuleLoader.load(() => AuthModule);
     const lazySrv = (await moduleRef).get(AuthService);
-    console.log('req', req.user);
     return await lazySrv.login(req.user);
   }
 
