@@ -57,7 +57,7 @@ Before running the project, ensure you have the following prerequisites installe
 
 - [NodeJs](https://nodejs.org/en)
 - [TypeScript](https://www.typescriptlang.org/download)
-- [MySql](https://www.mysql.com/)
+- [MySql](https://www.mysql.com/) ( replace configs in .env file with your own )
 - [NestJs-Cli](https://docs.nestjs.com/cli/overview)
 
 ## Running the app
