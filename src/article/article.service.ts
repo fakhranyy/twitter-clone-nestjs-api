@@ -20,7 +20,7 @@ export class ArticleService {
   ) {}
 
   async findAll(
-    currentUserId: number,
+    req: any,
     query: any,
   ): Promise<ArticlesResponseInterface> {
     const queryBuilder = this.dataSource
@@ -79,9 +79,9 @@ export class ArticleService {
     }
     let favoriteIds: number[] = [];
 
-    if (currentUserId) {
+    if (req.user.id) {
       const currentUser = await this.userRepo.findOne({
-        where: { id: currentUserId },
+        where: { id: req.user.id },
         relations: ['favorites'],
       });
       favoriteIds = currentUser.favorites.map((favorite) => favorite.id);
@@ -96,7 +96,7 @@ export class ArticleService {
   }
 
   createArticle(
-    currentUser: User,
+    req: any,
     createArticleDto: CreateArticleDto,
   ): Promise<Article> {
     const article = new Article(); // this will create for us an empty article
@@ -106,7 +106,7 @@ export class ArticleService {
       article.tagList = []; // so this will create a list if we didn't pass one
     }
     article.slug = this.getSlug(createArticleDto.title);
-    article.author = currentUser; // we add the currentUser to the article object by the relation
+    article.author = req.user; // we add the currentUser to the article object by the relation
     return this.artRepo.save(article); // then we publish it to database
   }
 
@@ -128,13 +128,13 @@ export class ArticleService {
 
   async deleteArticle(
     slug: string,
-    currentUserId: number,
+    req: any,
   ): Promise<DeleteResult> {
     const article = await this.findBySlug(slug);
     if (!article) {
       throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
     }
-    if (article.author.id !== currentUserId) {
+    if (article.author.id !== req.user.id) {
       throw new HttpException('You are not an author', HttpStatus.FORBIDDEN);
     }
     return await this.artRepo.delete({ slug });
@@ -143,25 +143,23 @@ export class ArticleService {
   async updateArticle(
     slug: string,
     updateArticleDto: UpdateArticleDto,
-    
-    currentUserId: number,
+    req: any
   ): Promise<Article> {
     const article = await this.findBySlug(slug);
     if (!article) {
       throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
     }
-    if (article.author.id !== currentUserId) {
+    if (article.author.id !== req.user.id) {
       throw new HttpException('You are not an author', HttpStatus.FORBIDDEN);
     }
     Object.assign(article, updateArticleDto); //! Object.assign(target, source)
     return await this.artRepo.save(article);
   }
-  
 
-  async addArticleToFavorites(slug: string, userId: number): Promise<Article> {
+  async addArticleToFavorites(slug: string, req: any): Promise<Article> {
     const article = await this.findBySlug(slug);
     const user = await this.userRepo.findOne({
-      where: { id: userId },
+      where: { id: req.user.id },
       relations: ['favorites'],
     }); //* when we fetch a single user, we want to get this user with this relations
 
@@ -172,7 +170,7 @@ export class ArticleService {
       ) === -1; //* in this case, if our findIndex return minus one, this means that the article is note favorite
 
     if (isArticleNotFavorited) {
-      user.favorites.push(article); 
+      user.favorites.push(article);
       article.favoritesCount++;
       await this.userRepo.save(user);
       await this.artRepo.save(article);
@@ -184,11 +182,11 @@ export class ArticleService {
 
   async deleteArticleFromFavorites(
     slug: string,
-    userId: number,
+    req: any
   ): Promise<Article> {
     const article = await this.findBySlug(slug);
     const user = await this.userRepo.findOne({
-      where: { id: userId },
+      where: { id: req.user.id },
       relations: ['favorites'],
     }); //* when we fetch a single user, we want to get this user with this relations
 
@@ -206,13 +204,12 @@ export class ArticleService {
     return article;
   }
 
-
   async getFeed(
-    currentUserId: number,
+    req: any,
     query: any,
   ): Promise<ArticlesResponseInterface> {
     const follows = await this.followRepo.find({
-      where: { followerId: currentUserId },
+      where: { followerId: req.user.id },
     }); //* find return for us array of data
 
     if (follows.length === 0) {

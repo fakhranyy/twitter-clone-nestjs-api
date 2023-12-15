@@ -14,7 +14,7 @@ export class ProfileService {
   ) {}
 
   async getProfile(
-    currentUserId: number,
+    req: any,
     profileUsername: string,
   ): Promise<ProfileType> {
     const user = await this.userRepo.findOne({
@@ -27,7 +27,7 @@ export class ProfileService {
 
     const follow = await this.followRepo.findOne({
       where: {
-        followerId: currentUserId,
+        followerId: req.user.id,
         followingId: user.id,
       },
     });
@@ -36,7 +36,7 @@ export class ProfileService {
   }
 
   async followProfile(
-    currentUserId: number,
+    req: any,
     profileUsername: string,
   ): Promise<ProfileType> {
     const user = await this.userRepo.findOne({
@@ -48,7 +48,7 @@ export class ProfileService {
       throw new HttpException("Profile doesn't exist", HttpStatus.NOT_FOUND);
     }
 
-    if (currentUserId === user.id) {
+    if (req.user.id === user.id) {
       //* here i check they're differnt, Because i can't follow my acount!
       throw new HttpException(
         "Follower and Following can't be equal",
@@ -59,7 +59,7 @@ export class ProfileService {
     const follow = await this.followRepo.findOne({
       //* make sure that the followerId doesn't follow followingId
       where: {
-        followerId: currentUserId, //* the one who follows.
+        followerId: req.user.id, //* the one who follows.
         followingId: user.id, //* this the profile which we supposed to follow it.
       },
     });
@@ -67,7 +67,7 @@ export class ProfileService {
     if (!follow) {
       //* And If the follower doesn't follow following, we'll do some magic that nake the follower follow the following user
       const followToCreate = new Follow();
-      followToCreate.followerId = currentUserId;
+      followToCreate.followerId = req.user.id;
       followToCreate.followingId = user.id;
       await this.followRepo.save(followToCreate);
     }
@@ -75,7 +75,7 @@ export class ProfileService {
   }
 
   async unfollowProfile(
-    currentUserId: number,
+    req: any,
     profileUsername: string,
   ): Promise<ProfileType> {
     const user = await this.userRepo.findOne({
@@ -87,7 +87,7 @@ export class ProfileService {
       throw new HttpException("Profile doesn't exist", HttpStatus.NOT_FOUND);
     }
 
-    if (currentUserId === user.id) {
+    if (req.user.id === user.id) {
       //* here i check they're differnt, Because i can't follow my acount!
       throw new HttpException(
         "Follower and Following can't be equal",
@@ -97,7 +97,7 @@ export class ProfileService {
 
     await this.followRepo.delete({
       //* unfollow the user
-      followerId: currentUserId,
+      followerId: req.user.id,
       followingId: user.id,
     });
 

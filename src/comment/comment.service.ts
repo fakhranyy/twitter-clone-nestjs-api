@@ -15,7 +15,6 @@ export class CommentService {
     @InjectRepository(Comment)
     private readonly commentRepo: Repository<Comment>,
     @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
     private readonly artSrv: ArticleService,
     private readonly userSrv: UserService,
   ) {}

@@ -21,7 +21,6 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('comments')
 export class CommentController {
   constructor(
-    private readonly commentSrv: CommentService,
     private readonly lazyModuleLoader: LazyModuleLoader,
   ) {}
 

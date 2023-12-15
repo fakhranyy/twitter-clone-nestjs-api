@@ -5,9 +5,9 @@ import {
   Post,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { Userdeco } from 'src/user/decorators/user.decorator';
 import { ProfileResponseInterface } from './types/profileResponse.interface';
 import { LazyModuleLoader } from '@nestjs/core';
 import { ProfileModule } from './profile.module';
@@ -22,18 +22,17 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @ApiTags('Profiles')
 @Controller('profiles')
 export class ProfileController {
-  // constructor(private readonly profileSer: ProfileService) {}
   constructor(private lazyModuleLoader: LazyModuleLoader) {}
 
   @ApiAcceptedResponse({ description: 'get profile by username' })
   @Get(':username')
   async getProfile(
-    @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Param('username') profileUsername: string,
   ): Promise<ProfileResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ProfileModule);
     const lazySrv = (await moduleRef).get(ProfileService);
-    const profile = await lazySrv.getProfile(currentUserId, profileUsername);
+    const profile = await lazySrv.getProfile(req, profileUsername);
     return lazySrv.buildProfileResponse(profile);
 
     // const profile = await
@@ -43,12 +42,12 @@ export class ProfileController {
   @Post(':username/follow')
   @UseGuards(JwtAuthGuard)
   async followProfile(
-    @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Param('username') profileUsername: string,
   ): Promise<ProfileResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ProfileModule);
     const lazySrv = (await moduleRef).get(ProfileService);
-    const profile = await lazySrv.followProfile(currentUserId, profileUsername); //*   ( profileUsername ) that we want to follow
+    const profile = await lazySrv.followProfile(req, profileUsername); //*   ( profileUsername ) that we want to follow
     return lazySrv.buildProfileResponse(profile); //* the response which made for the frontend
   }
 
@@ -56,13 +55,13 @@ export class ProfileController {
   @Delete(':username/unfollow')
   @UseGuards(JwtAuthGuard)
   async unfollowProfile(
-    @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Param('username') profileUsername: string,
   ): Promise<ProfileResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ProfileModule);
     const lazySrv = (await moduleRef).get(ProfileService);
     const profile = await lazySrv.unfollowProfile(
-      currentUserId,
+      req,
       profileUsername,
     ); //* ( profileUsername ) that we want to follow
     return lazySrv.buildProfileResponse(profile); //* the response which made for the frontend

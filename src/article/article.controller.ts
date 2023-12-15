@@ -9,19 +9,16 @@ import {
   Patch,
   UsePipes,
   Query,
+  Request,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
-import { Userdeco } from 'src/user/decorators/user.decorator';
-import { User } from 'src/user/entities/user.entity';
 import { ArticleResponseInterface } from './types/articleResponse.interface';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import {
   ApiAcceptedResponse,
   ApiBadRequestResponse,
   ApiCreatedResponse,
-  ApiDefaultResponse,
-  ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
@@ -44,12 +41,13 @@ export class ArticleController {
   @ApiAcceptedResponse({ description: 'Get all articles' })
   @Get()
   async findAll(
-    @Userdeco('id') currentUserid: number,
+    // @Userdeco('id') currentUserid: number,
+    @Request() req,
     @Query() query: any,
   ): Promise<ArticlesResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = (await moduleRef).get(ArticleService);
-    return await lazySrv.findAll(currentUserid, query);
+    return await lazySrv.findAll(req, query);
   }
 
   @Post()
@@ -63,13 +61,14 @@ export class ArticleController {
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BackendValidationPipe())
-  async create(
-    @Userdeco() currentUser: User,
+  async createArticle(
+    // @Userdeco() currentUser: User,
+    @Request() req,
     @Body('article') createArticleDto: CreateArticleDto,
   ): Promise<ArticleResponseInterface> {
     const moduleRef = await this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = moduleRef.get(ArticleService);
-    const article = await lazySrv.createArticle(currentUser, createArticleDto);
+    const article = await lazySrv.createArticle(req, createArticleDto);
     return lazySrv.buildArticaleResponse(article);
   }
 
@@ -77,7 +76,6 @@ export class ArticleController {
   @ApiBadRequestResponse({
     description: ' cannot get the article, there is no article by this slug',
   })
-
   @Get('single/:slug') //* param is a optional field
   async getSingleArticle(
     @Param('slug') slug: string,
@@ -95,12 +93,13 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Delete(':slug')
   async deleteArticle(
-    @Userdeco('id') currentUserId: number,
+    // @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Param('slug') slug: string,
   ) {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = (await moduleRef).get(ArticleService);
-    return await lazySrv.deleteArticle(slug, currentUserId);
+    return await lazySrv.deleteArticle(slug, req);
   }
 
   @ApiCreatedResponse({
@@ -114,7 +113,8 @@ export class ArticleController {
   @Patch(':slug')
   @UsePipes(new BackendValidationPipe()) //* that validationPipe would implement this pipe on params
   async updateArticle(
-    @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
+    // @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
+    @Request() req,
     @Param('slug') slug: string,
     @Body('article') updateArticleDto: UpdateArticleDto, //! this means that I should write the body inside "article" : {} ,And if not it wouldn't work in update
   ) {
@@ -123,7 +123,7 @@ export class ArticleController {
     const article = await lazySrv.updateArticle(
       slug,
       updateArticleDto,
-      currentUserId,
+      req,
     );
     return lazySrv.buildArticaleResponse(article);
   }
@@ -138,12 +138,13 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Post(':slug')
   async addArticleToFavorites(
-    @Userdeco('id') currentUserId: number,
+    // @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Param('slug') slug: string,
   ): Promise<ArticleResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = (await moduleRef).get(ArticleService);
-    const article = await lazySrv.addArticleToFavorites(slug, currentUserId);
+    const article = await lazySrv.addArticleToFavorites(slug, req);
     return lazySrv.buildArticaleResponse(article);
   }
 
@@ -157,7 +158,8 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Delete(':slug/favorite')
   async deleteArticleFromFavorites(
-    @Userdeco('id') currentUserId: number,
+    // @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Param('slug') slug: string,
   ): Promise<ArticleResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
@@ -165,7 +167,7 @@ export class ArticleController {
 
     const article = await lazySrv.deleteArticleFromFavorites(
       slug,
-      currentUserId,
+      req,
     );
     return lazySrv.buildArticaleResponse(article);
   }
@@ -177,11 +179,12 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Get('feed')
   async getFeed(
-    @Userdeco('id') currentUserId: number,
+    // @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Query() query: any,
   ): Promise<ArticlesResponseInterface> {
     const moduleRef = this.lazyModuleLoader.load(() => ArticleModule);
     const lazySrv = (await moduleRef).get(ArticleService);
-    return await lazySrv.getFeed(currentUserId, query);
+    return await lazySrv.getFeed(req, query);
   }
 }

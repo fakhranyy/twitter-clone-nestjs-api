@@ -8,12 +8,11 @@ import {
   Patch,
   Param,
   Req,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { Userdeco } from './decorators/user.decorator';
-// import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiAcceptedResponse,
@@ -23,7 +22,6 @@ import {
 import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
-import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller()
@@ -40,7 +38,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
 */
   @ApiAcceptedResponse({ description: 'Get all users' })
   @Get('users')
-  async findAll(@Req() request: Request): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
     return await lazySrv.findAll();
@@ -71,12 +69,12 @@ and i need to add validation rules from (class-validator & class-transformer) in
   @UseGuards(JwtAuthGuard)
   @Patch('user')
   async updateCurrentUser(
-    @Userdeco('id') currentUserId: number,
+    @Request() req,
     @Body('user') updateUserDto: UpdateUserDto,
   ): Promise<User> {
     const moduleRef = this.lazyModuleLoader.load(() => UserModule);
     const lazySrv = (await moduleRef).get(UserService);
-    const user = await lazySrv.updateUser(currentUserId, updateUserDto);
+    const user = await lazySrv.updateUser(req, updateUserDto);
     return lazySrv.buildUserResponse(user);
   }
 }

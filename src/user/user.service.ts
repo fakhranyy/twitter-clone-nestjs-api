@@ -55,10 +55,10 @@ export class UserService {
   }
 
   async updateUser(
-    currentUserId: number,
+    req: any,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    const user = await this.findById(currentUserId);
+    const user = await this.findById(req.user.id);
     Object.assign(user, updateUserDto); //  Object.assign(target, source)
     return await this.userRepo.save(user);
   }
