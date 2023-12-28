@@ -27,6 +27,7 @@ import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { Article } from './entities/article.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 
 @Controller('articles')
 @ApiTags('Articles Apis')
@@ -40,6 +41,7 @@ export class ArticleController {
   //* -> And of course we can get a single parameter if we will provide it inside.
   @ApiAcceptedResponse({ description: 'Get all articles' })
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll(
     // @Userdeco('id') currentUserid: number,
     @Request() req,
@@ -60,6 +62,7 @@ export class ArticleController {
   })
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
   @UseGuards(JwtAuthGuard)
+  // @UseGuards(LocalAuthGuard) //* check the username and password
   @UsePipes(new BackendValidationPipe())
   async createArticle(
     // @Userdeco() currentUser: User,
@@ -67,9 +70,9 @@ export class ArticleController {
     @Body('article') createArticleDto: CreateArticleDto,
   ): Promise<ArticleResponseInterface> {
     const moduleRef = await this.lazyModuleLoader.load(() => ArticleModule);
-    const lazySrv = moduleRef.get(ArticleService);
+    const lazySrv =  moduleRef.get(ArticleService);
     const article = await lazySrv.createArticle(req, createArticleDto);
-    return lazySrv.buildArticaleResponse(article);
+    return  lazySrv.buildArticaleResponse(article);
   }
 
   @ApiAcceptedResponse({ description: 'Get single article by slug' })

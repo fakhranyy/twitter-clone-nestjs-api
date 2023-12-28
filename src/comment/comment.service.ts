@@ -7,14 +7,13 @@ import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
-import { Request } from 'express';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepo: Repository<Comment>,
-    @InjectRepository(User)
+    // @InjectRepository(User)
     private readonly artSrv: ArticleService,
     private readonly userSrv: UserService,
   ) {}
@@ -24,15 +23,17 @@ export class CommentService {
     slug: string,
   ): Promise<Comment> {
     const comments = new Comment();
-    const user = await this.userSrv.findOne(req.user.username);
+    Object.assign(comments, createCommentDto);
     const article = await this.artSrv.findBySlug(slug);
+    const user = await this.userSrv.findOne(req.user.username);
 
     comments.article = article;
     comments.user = user;
-    Object.assign(comments, createCommentDto);
     delete user.password;
-
-    return await this.commentRepo.save(comments);
+    if (comments) {
+      return await this.commentRepo.save(comments);
+    }
+    return null;
   }
 
   async deleteComment(commentId: number, req: User) {

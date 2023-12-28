@@ -9,6 +9,7 @@ import slugify from 'slugify';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
 import { Follow } from 'src/profile/entities/follow.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ArticleService {
@@ -16,13 +17,13 @@ export class ArticleService {
     @InjectRepository(Article) private readonly artRepo: Repository<Article>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Follow) private readonly followRepo: Repository<Follow>,
+    private readonly userSrv: UserService,
     private dataSource: DataSource,
   ) {}
 
-  async findAll(
-    req: any,
-    query: any,
-  ): Promise<ArticlesResponseInterface> {
+  async findAll(req: any, query: any): Promise<ArticlesResponseInterface> {
+    const user = await this.userSrv.findOne(req.user.username);
+    console.log('User from find All', req.user);
     const queryBuilder = this.dataSource
       .getRepository(Article)
       .createQueryBuilder(
@@ -81,7 +82,8 @@ export class ArticleService {
 
     if (req.user.id) {
       const currentUser = await this.userRepo.findOne({
-        where: { id: req.user.id },
+        //! where: { id: req.user.id },
+        where: { id: user.id },
         relations: ['favorites'],
       });
       favoriteIds = currentUser.favorites.map((favorite) => favorite.id);
@@ -95,10 +97,12 @@ export class ArticleService {
     return { articles: articlesWithFavorited, articlesCount };
   }
 
-  createArticle(
+  async createArticle(
     req: any,
     createArticleDto: CreateArticleDto,
   ): Promise<Article> {
+    const user = await this.userSrv.findOne(req.user.username);
+    delete user.password;
     const article = new Article(); // this will create for us an empty article
     Object.assign(article, createArticleDto); // Object.assign(target, source), we want to assign all properties from dto inside the target(article)
     // now we have a problem, our tagList can be undefined because it's not required so we did the next process ,, to check if it's undefined -> and if it was undefined give a null value to it
@@ -106,7 +110,9 @@ export class ArticleService {
       article.tagList = []; // so this will create a list if we didn't pass one
     }
     article.slug = this.getSlug(createArticleDto.title);
-    article.author = req.user; // we add the currentUser to the article object by the relation
+    //! article.author = req.user; // we add the currentUser to the article object by the relation
+    article.author = user;
+    console.log(user, 'from article service');
     return this.artRepo.save(article); // then we publish it to database
   }
 
@@ -126,10 +132,7 @@ export class ArticleService {
     return await this.artRepo.findOne({ where: { slug } });
   }
 
-  async deleteArticle(
-    slug: string,
-    req: any,
-  ): Promise<DeleteResult> {
+  async deleteArticle(slug: string, req: any): Promise<DeleteResult> {
     const article = await this.findBySlug(slug);
     if (!article) {
       throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
@@ -143,7 +146,7 @@ export class ArticleService {
   async updateArticle(
     slug: string,
     updateArticleDto: UpdateArticleDto,
-    req: any
+    req: any,
   ): Promise<Article> {
     const article = await this.findBySlug(slug);
     if (!article) {
@@ -180,10 +183,7 @@ export class ArticleService {
     return article;
   }
 
-  async deleteArticleFromFavorites(
-    slug: string,
-    req: any
-  ): Promise<Article> {
+  async deleteArticleFromFavorites(slug: string, req: any): Promise<Article> {
     const article = await this.findBySlug(slug);
     const user = await this.userRepo.findOne({
       where: { id: req.user.id },
@@ -204,10 +204,7 @@ export class ArticleService {
     return article;
   }
 
-  async getFeed(
-    req: any,
-    query: any,
-  ): Promise<ArticlesResponseInterface> {
+  async getFeed(req: any, query: any): Promise<ArticlesResponseInterface> {
     const follows = await this.followRepo.find({
       where: { followerId: req.user.id },
     }); //* find return for us array of data

@@ -25,11 +25,11 @@ export class CreateArticleDto {
   @IsString()
   readonly body: string;
 
-  @ApiProperty({ 
-    description: 'unique title of the article',
-      })
-  @IsString()
-  readonly slug: string;
+  // @ApiProperty({ 
+  //   description: 'unique title of the article',
+  //     })
+  // @IsString()
+  // readonly slug: string;
 
   readonly tagList?: string[]; // the ( ? ) after field name makes it not mandatory
 }
