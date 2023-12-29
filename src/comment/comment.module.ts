@@ -10,7 +10,7 @@ import { Article } from 'src/article/entities/article.entity';
 import { UserService } from 'src/user/user.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment, User, Follow, Article])],
+  imports: [TypeOrmModule.forFeature([Comment, Article, User, Follow ])],
   controllers: [CommentController],
   providers: [CommentService, ArticleService, UserService ],
 })

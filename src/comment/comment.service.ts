@@ -13,7 +13,6 @@ export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepo: Repository<Comment>,
-    // @InjectRepository(User)
     private readonly artSrv: ArticleService,
     private readonly userSrv: UserService,
   ) {}
@@ -23,17 +22,14 @@ export class CommentService {
     slug: string,
   ): Promise<Comment> {
     const comments = new Comment();
-    Object.assign(comments, createCommentDto);
     const article = await this.artSrv.findBySlug(slug);
     const user = await this.userSrv.findOne(req.user.username);
-
-    comments.article = article;
     comments.user = user;
     delete user.password;
-    if (comments) {
-      return await this.commentRepo.save(comments);
-    }
-    return null;
+    comments.article = article;
+    Object.assign(comments, createCommentDto);
+    console.log(article.author);
+    return await this.commentRepo.save(comments);
   }
 
   async deleteComment(commentId: number, req: User) {

@@ -10,6 +10,7 @@ import {
   UsePipes,
   Query,
   Request,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -24,15 +25,13 @@ import {
 import { LazyModuleLoader } from '@nestjs/core';
 import { ArticleModule } from './article.module';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
-import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { Article } from './entities/article.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 
 @Controller('articles')
 @ApiTags('Articles Apis')
 export class ArticleController {
-  constructor(private lazyModuleLoader: LazyModuleLoader) {}
+  constructor(private readonly lazyModuleLoader: LazyModuleLoader) {}
 
   //? what is @Query ?
   //* -> this is an object with all query params.
@@ -62,8 +61,8 @@ export class ArticleController {
   })
   //* this guard allow only for authenticated users to pass, which mean if we don't have token then we're getting 401 unAuthorized
   @UseGuards(JwtAuthGuard)
-  // @UseGuards(LocalAuthGuard) //* check the username and password
-  @UsePipes(new BackendValidationPipe())
+  //! @UseGuards(LocalAuthGuard) //* check the username and password
+  @UsePipes(new ValidationPipe())
   async createArticle(
     // @Userdeco() currentUser: User,
     @Request() req,
@@ -96,7 +95,6 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Delete(':slug')
   async deleteArticle(
-    // @Userdeco('id') currentUserId: number,
     @Request() req,
     @Param('slug') slug: string,
   ) {
@@ -114,9 +112,8 @@ export class ArticleController {
   })
   @UseGuards(JwtAuthGuard)
   @Patch(':slug')
-  @UsePipes(new BackendValidationPipe()) //* that validationPipe would implement this pipe on params
-  async updateArticle(
-    // @Userdeco('id') currentUserId: number, //* this decorator has the metadata of user
+  @UsePipes(new ValidationPipe())
+  async updateArticle(  
     @Request() req,
     @Param('slug') slug: string,
     @Body('article') updateArticleDto: UpdateArticleDto, //! this means that I should write the body inside "article" : {} ,And if not it wouldn't work in update
@@ -141,7 +138,6 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Post(':slug')
   async addArticleToFavorites(
-    // @Userdeco('id') currentUserId: number,
     @Request() req,
     @Param('slug') slug: string,
   ): Promise<ArticleResponseInterface> {
@@ -161,7 +157,6 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Delete(':slug/favorite')
   async deleteArticleFromFavorites(
-    // @Userdeco('id') currentUserId: number,
     @Request() req,
     @Param('slug') slug: string,
   ): Promise<ArticleResponseInterface> {
@@ -182,7 +177,6 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @Get('feed')
   async getFeed(
-    // @Userdeco('id') currentUserId: number,
     @Request() req,
     @Query() query: any,
   ): Promise<ArticlesResponseInterface> {

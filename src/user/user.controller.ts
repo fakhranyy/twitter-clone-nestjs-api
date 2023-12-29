@@ -9,6 +9,7 @@ import {
   Param,
   Req,
   Request,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,7 +22,6 @@ import {
 } from '@nestjs/swagger';
 import { LazyModuleLoader } from '@nestjs/core';
 import { UserModule } from './user.module';
-import { BackendValidationPipe } from 'src/common/pipes/backendValidation.pipe';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller()
@@ -46,7 +46,7 @@ and i need to add validation rules from (class-validator & class-transformer) in
 
   @ApiCreatedResponse({ description: 'Create user', type: User })
   @Post('user')
-  @UsePipes(new BackendValidationPipe())
+  @UsePipes(new ValidationPipe())
   async createUser(
     @Body('user') createUserDto: CreateUserDto, // because of @Body('user'), In postMan When i Passed params to test I should put it in object user: {id:'', email: '', etc}
   ): Promise<User> {

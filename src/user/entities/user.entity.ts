@@ -21,7 +21,7 @@ export class User {
   id: number;
 
   @ApiProperty({ example: 'ziad@gmail.com' })
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   email: string;
 
   @ApiProperty({ example: 'short description about user' })
@@ -33,7 +33,7 @@ export class User {
   image: string; //* in our case, image is not really an image .. this is just the url where we can load the image
 
   @ApiProperty({ example: 'ziad99' })
-  @Column()
+  @Column({ unique: true })
   username: string;
 
   @ApiProperty({ example: 'its gonna hashed before insert' })

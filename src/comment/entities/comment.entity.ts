@@ -13,7 +13,7 @@ export class Comment {
   text: string;
 
   @IsNumber()
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   commentCount: number;
 
   @ManyToOne(() => User, (user) => user.comments, {

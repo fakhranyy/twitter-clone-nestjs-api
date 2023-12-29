@@ -22,7 +22,9 @@ export class ArticleService {
   ) {}
 
   async findAll(req: any, query: any): Promise<ArticlesResponseInterface> {
-    const user = await this.userSrv.findOne(req.user.username);
+    // const user = await this.userSrv.findOne(req.user.username);
+    const user = await this.userSrv.findById(req.user.id);
+
     console.log('User from find All', req.user);
     const queryBuilder = this.dataSource
       .getRepository(Article)
@@ -80,7 +82,7 @@ export class ArticleService {
     }
     let favoriteIds: number[] = [];
 
-    if (req.user.id) {
+    if (user) {
       const currentUser = await this.userRepo.findOne({
         //! where: { id: req.user.id },
         where: { id: user.id },
@@ -101,7 +103,8 @@ export class ArticleService {
     req: any,
     createArticleDto: CreateArticleDto,
   ): Promise<Article> {
-    const user = await this.userSrv.findOne(req.user.username);
+    //! const user = await this.userSrv.findOne(req.user.username);
+    const user = await this.userSrv.findById(req.user.id);
     delete user.password;
     const article = new Article(); // this will create for us an empty article
     Object.assign(article, createArticleDto); // Object.assign(target, source), we want to assign all properties from dto inside the target(article)
@@ -112,7 +115,6 @@ export class ArticleService {
     article.slug = this.getSlug(createArticleDto.title);
     //! article.author = req.user; // we add the currentUser to the article object by the relation
     article.author = user;
-    console.log(user, 'from article service');
     return this.artRepo.save(article); // then we publish it to database
   }
 
@@ -129,15 +131,21 @@ export class ArticleService {
   }
 
   async findBySlug(slug: string): Promise<Article> {
+    //! return await this.artRepo.findOne({ where: { slug } , relations: ['author'] });
     return await this.artRepo.findOne({ where: { slug } });
   }
 
   async deleteArticle(slug: string, req: any): Promise<DeleteResult> {
     const article = await this.findBySlug(slug);
+    //! const user = await this.userSrv.findOne(req.user.username);
+    const user = await this.userSrv.findById(req.user.id);
+
+
+    console.log(user)
     if (!article) {
       throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
     }
-    if (article.author.id !== req.user.id) {
+    if (article.author.id !== user.id) {
       throw new HttpException('You are not an author', HttpStatus.FORBIDDEN);
     }
     return await this.artRepo.delete({ slug });
@@ -149,10 +157,13 @@ export class ArticleService {
     req: any,
   ): Promise<Article> {
     const article = await this.findBySlug(slug);
+    //! const user = await this.userSrv.findOne(req.user.username);
+    const user = await this.userSrv.findById(req.user.id);
+
     if (!article) {
       throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
     }
-    if (article.author.id !== req.user.id) {
+    if (article.author.id !== user.id) {
       throw new HttpException('You are not an author', HttpStatus.FORBIDDEN);
     }
     Object.assign(article, updateArticleDto); //! Object.assign(target, source)
@@ -161,6 +172,10 @@ export class ArticleService {
 
   async addArticleToFavorites(slug: string, req: any): Promise<Article> {
     const article = await this.findBySlug(slug);
+    //! const user = await this.userSrv.findOne(req.user.username);
+    // const user = await this.userSrv.findById(req.user.id);
+
+
     const user = await this.userRepo.findOne({
       where: { id: req.user.id },
       relations: ['favorites'],
@@ -170,7 +185,7 @@ export class ArticleService {
       user.favorites.findIndex(
         //* favorites relation property which return Article Entity
         (articleInFavorites) => articleInFavorites.id === article.id,
-      ) === -1; //* in this case, if our findIndex return minus one, this means that the article is note favorite
+      ) === -1; //* in this case, if our findIndex return minus one, this means that the article is not favorite
 
     if (isArticleNotFavorited) {
       user.favorites.push(article);
