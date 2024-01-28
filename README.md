@@ -80,7 +80,7 @@ $ npm run start:prod
 - You can review the api endpoints via [ swagger ](http://localhost:3000/swagger).
 - Also you can interact with the API using tools like [Postman](https://www.postman.com/) or integrate it into your application.
 
-(![Run in Postman])(https://run.pstmn.io/button.svg) ( file in @documentation folder)
+- Run in Postman -> (file in @documentation folder)
 
 ## Github Repo
 
