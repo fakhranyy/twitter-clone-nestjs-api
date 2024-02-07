@@ -80,7 +80,7 @@ $ npm run start:prod
 - You can review the api endpoints via [ swagger ](http://localhost:3000/swagger).
 - Also you can interact with the API using tools like [Postman](https://www.postman.com/) or integrate it into your application.
 
-- Run in Postman -> ( file in @documentation folder in project folders )
+- Run in [Postman](https://www.postman.com/gold-water-721915/workspace/twitter-clone-api/collection/31885780-73bc26f5-ac91-4e4b-acc7-083a2bb5dc37)
 
 ## Github Repo
 
